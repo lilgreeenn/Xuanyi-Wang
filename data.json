@@ -1,0 +1,441 @@
+{
+    "projects": [
+        {
+            "id": 1,
+            "title": "KberKill(Demo)",
+            "category": ["Game", "VR+AI"],
+            "tags": ["VR(Apple Vision Pro)", "Demo", "Game"],
+                "description": "One day, you become a killer... <br> <br> This is a demo of a VR interactive game where players can walk around the room wearing a VR device, reason out the assassination target, kill the target with the right items, and unlock different endings.",
+            
+            "tech": "Unity, Xcode, Blender",
+            "date": "May 2025",
+          
+           "videoLink": "https://vimeo.com/1086496618?share=copy",
+            "image": "2000.png",
+            "gallery": [
+                "2001.png",
+               "2002.png",
+                "2003.png",
+                "2004.png",
+                "2005.png",
+                "2006.png",
+                "2007.png"
+            ]
+           
+        },
+
+
+        {
+            "id": 2,
+            "title": "MusikaJ",
+            "category": "Website+APP",
+            "tags": ["Self as system", "JavaScript", "Music"],
+            "description": "A website that allows users to create their own music, and record the memory of the live music.",
+          
+            "tech": "javascript",
+            "date": "October 2024",
+          
+            "demoLink": "https://lilgreeenn.github.io/MusikaJ/index.html",
+            "image": "210.png",
+            "gallery": [
+                "2100.png",
+               "21111.png",
+                "211.png",
+                "212.png",
+                "213.png",
+                "214.png",
+                "215.png"
+            ]
+           
+        },
+
+        {
+            "id": 3,
+            "title": "CityQuest",
+            "category": "Website+APP",
+            "tags": ["APP", "Xcode", "NFC"],
+           "description": "It is a tapping sticker that will have a pop-up that will earn the station's icon on the user's phone (NFC tag).  <br> <br> Then, users can get the station icon on their phone and explore more stickers to tap, searching around the city.  <br> <br> NFC tap to unlock each subway icon.",
+           "tech": "Xcode, NFC",
+            "date": "February 2025",
+            
+          "videoLink": "https://vimeo.com/1086353325",
+            "demoVideo": "https://lilgreeenn.github.io/MusikaJ/index.html",
+            "image": "1700.png",
+            "gallery": [
+                "1701.png",
+                "1702.png",
+                "1703.png",
+                "1704.png",
+                "1705.png",
+                "1706.png",
+                "1707.png",
+                "1708.png",
+                "1709.png",
+                "1710.png",
+                "1711.png",
+                "1712.png"
+            ]
+           
+        },
+        
+        {
+            "id": 4,
+            "title": "Layoff! Survive!",
+            "category": ["Animation", "VR+AI"],
+            "tags": ["Animation","Interactive video","VR(Apple Vision Pro)"],
+            "description": "Layoff! And Survive! <br> <br>  This is an interactive 2d animation. The setting is a world where layoffs are a real survival game, where different choices determine the outcome of the character you play (the worker), and if you're lucky you don't get laid off.  <br> <br> PS. if super lucky you can watch other people playing the survival game in a movie theater (VR scene)",
+            "tech": "2D Animation", 
+            "date": "May 2024",
+            "videoLink": "https://www.bilibili.com/video/BV1DZ421x7iW/?spm_id_from=333.999.0.0",
+            "image": "1400.png",
+            "gallery": [
+                "1401.png",
+                "1402.png",
+                "1403.png",
+                "1404.png",
+                "1405.png",
+                "1406.png",
+                "1407.png",
+                "1408.png",
+                "1409.png"
+            ],
+            "settingGallery": [
+                "02.PNG.png",
+                "01.PNG.png",
+                "03.PNG.png",
+                "04.PNG.png",
+                "05.PNG.png",
+                "06.PNG.png",
+                "07.PNG.png",
+                "08.PNG.png",
+                "09.PNG.png"
+            ]
+        },
+ 
+        {
+            "id": 5,
+            "title": "Dusty Memories (first)",
+            "category": ["Website+APP", "Animation", "VR+AI"],
+            "tags": ["Animation","Website","VR(Apple Vision Pro)"],
+            "description": "In a futuristic world where the memories of dead humans are turned into dangerous “memory dust...",
+            "tech": "2D Animation, VR, Website", 
+            "date": "December 2024",
+            "demoLink":"https://lilgreeenn.github.io/202412/",
+            "videoLink": "https://www.youtube.com/watch?v=Pj9aV0__WJo",
+            "image": "18000.png",
+            "gallery": [
+                "1801.png",
+                "1802.png",
+                "1803.png",
+                "1804.png",
+                "1805.png"
+            ]
+        },
+        {
+            "id": 6,
+            "title": "Music Diary📓(Demo)",
+            "category": "Website+APP",
+            "tags": ["APP", "Xcode", "API"],
+           "description": "When you have music that you like to listen to, you can record the mood at the same time.",
+           "tech": "Xcode",
+            "date": "March 2025",
+            
+         
+            "image": "25000.png",
+            "gallery": [
+                "2500.png",
+                "2501.png"
+            ]
+           
+        },
+        {
+            "id": 6,
+            "title": "Dream",
+            "category": ["Game"],
+            "tags": ["Game,P5.js"],
+            "description": "A PRG mini-game about collecting items, synthesizing different items, and finding memories through mouse touches!",
+            "tech": "P5.js, Blender ", 
+            "date": "December 2023",
+                 "demoLink": "https://editor.p5js.org/wangx078/full/ggxC3KZkW",
+            "image": "1601.png",
+            "gallery": [
+                "1601.png",
+                "1602.png",
+                "1603.png",
+                "1604.png",
+                "1605.png",
+                "1606.png",
+                "1607.png",
+                "1608.png",
+                "1609.png",
+                "1610.png",
+                "1611.png",
+                "1612.png",
+                "1613.png",
+                "1614.png",
+                "1615.png"
+                
+            ]
+        },
+        {
+            "id": 7,
+            "title": "Dusty Memories",
+            "category": "Illustrations+Comic",
+            "tags": ["Comic"],
+         "description": "In a futuristic world where the memories of dead humans are turned into dangerous “memory dust,” Alica, a young girl raised in a segregated community of janitors, is responsible for recycling the dust to maintain social order. However, she has a secret - she secretly absorbs memories and experiences forbidden moments.",
+            "tech": "Comic",
+            "date": "October 2024",
+            "link": "https://drive.google.com/file/d/1lnvFNaVhuJOKEi6Tla3dqlv0U1OVznpb/view?usp=drive_link",
+            "image": "1010.png",
+            "gallery": [
+                "1010.png",
+                "1011.png",
+                "1012.png",
+                "1013.png",
+                "1014.png",
+                "1015.png",
+                "1016.png",
+                "1017.png",
+                "1018.png",
+                "1019.png",
+                "1020.png",
+                "1021.png",
+                "1022.png",
+                "1023.png"
+               
+            ]
+           
+        },
+        {
+            "id": 8,
+            "title": "Running Life",
+            "category": "Animation",
+            "tags": ["2D Animation"],
+            "description": "Running Life",
+            "tech": "2D Animation", 
+            "date": "May 2024",
+            "videoLink":  "https://vimeo.com/1086490938?share=copy",
+            "image": "1500.png",
+            "gallery": [
+                "1500.png",
+                "1501.png",
+                "1502.png",
+                "1503.png",
+                "1504.png",
+                "1505.png",
+                "1506.png",
+                "1507.png"
+            ]
+        },
+        {
+            "id": 9,
+            "title": "Young, Wild and Free",
+            "category": "Illustrations+Comic",
+            "tags": ["Comic"],
+            "description": "2008 China shamate Love story.（DEMO）",
+            "tech": "Comic", 
+            "date": "November 2024",
+            "image": "1101.PNG",
+            "gallery": [
+                "1101.PNG",
+                "1102.png",
+               
+                "1104.png",
+                "1105.png",
+                "1106.png",
+                "1107.png",
+                "1108.png"
+            ]
+        },
+        {
+            "id": 10,
+            "title": "GululuBot🦮",
+            "category": ["Website+APP", "VR+AI"],
+            "tags": ["AI", "Website"],
+            "description": "Talk to my dog!",
+            "tech": "javascript",
+            "date": "April 2024",
+            "link": "https://lilgreeenn.github.io/gululubot/",
+           
+            "image": "1200.png",
+            "gallery": [
+               
+                "1201.png",
+                "1202.png",
+                "1203.png"
+            ]
+        },
+
+        {
+            "id": 11,
+            "title": "Hand Painted",
+            "category": ["Game"],
+            "tags": ["Game,P5.js"],
+            "description": "Hand Painted is a browser-based, hand-tracking sketch pad built with p5.js + ml5.js Handpose. Turn your webcam on and your index-finger becomes a brush—no mouse or stylus needed.",
+            "tech": "P5.js, ml5.js", 
+            "date": "December 2023",
+                 "demoLink": "https://editor.p5js.org/wangx078/full/UKv3KlRYB",
+            "image": "2200.png",
+            "gallery": [
+               
+                "2201.png",
+              
+                "2203.png",
+                "2204.png",
+                "2205.png"
+                
+            ]
+        },
+
+
+        {
+            "id": 12,
+            "title": "Living in Internet World",
+            "category": "Fashion",
+            "tags": ["Air Pump", "Futuristic fashion"],
+            "description": "NPCs,but in reality",
+           
+            "tech": "air pump",
+            "date": "October 2023",
+            "link": "https://docs.google.com/presentation/d/11ZJzm3Bc2oZ_NtaMEWC43mx1F-GB4C-2lYUuD-ikChw/edit?usp=sharing",
+            "image": "1.png",
+            "gallery": [
+                "111.png",
+                "112.png",
+                "113.png"
+            ]
+        },
+        {
+            "id": 13,
+            "title": "Back to the Old town",
+            "category": "Fashion",
+            "tags": ["Fashion","Dunhuang", "LEDs"],
+            "description": "Pulse sensor and LED light to output a different color based on the user's heart rate",
+           
+            "tech": "LEDs",
+            "date": "October 2023",
+            "image": "4.png",
+            "gallery": [
+                "411.png",
+                "412.png",
+                "413.png"
+            ]
+           
+        },
+
+
+        {
+            "id": 14,
+            "title": "Run",
+            "category": "Fashion",
+            "tags": ["Beads", "Fashion"],
+           
+            "tech": "Beads",
+            "date": "May 2023",
+            "image": "510.png",
+            "gallery": [
+                "511.png",
+                "512.png",
+                "513.png",
+                "514.png"
+            ]
+           
+        },
+        {
+            "id": 15,
+            "title": "Bride",
+            "category": "Fashion",
+            "tags": ["Upcycle", "Fashion"],
+           
+            "tech": "Upcycle",
+            "date": "February 2023",
+            "image": "610.png",
+            "gallery": [
+                "611.png",
+                "612.png",
+                "613.png",
+                "614.png",
+                "615.png"
+            ]
+           
+        },
+        {
+            "id": 16,
+            "title": "Upcycle High Fashion",
+            "category": "Fashion",
+            "tags": ["Upcycle", "Fashion"],
+           
+            "tech": "fashion",
+            "date": "May 2024",
+            "image": "710.png",
+            "gallery": [
+                "711.png",
+                "712.png",
+                "713.png",
+                "714.png",
+                "715.png",
+                "716.png"
+            ]
+            
+           
+        },
+        {
+            "id": 17,
+            "title": "Pure",
+            "category": "Fashion",
+            "tags": ["Fashion", "Machine Knitting"],
+          
+            "tech": "Machine Knitting",
+            "date": "December 2024",
+            "image": "810.JPG",
+            "gallery": [
+                "811.JPG",
+                "812.JPG",
+                "813.JPG",
+                "814.JPG"
+            ]
+           
+        },
+        {
+            "id": 18,
+            "title": "Abandon Garden",
+            "category": "Fashion",
+            "tags": ["Fashion", "Machine Knitting"],
+           
+            "tech": "Fashion",
+            "date": "May 2023",
+            "image": "910.png",
+            "gallery": [
+                "911.png",
+                "912.png",
+                "913.png"
+            ]
+           
+        },
+        {
+            "id": 19,
+            "title": "Sleeping Beauty",
+            "category": "Illustrations+Comic",
+            "tags": ["Illustrations"],
+           
+            "tech": "Procreate",
+            "date": "September 2024",
+            "image": "2300.png"
+           
+           
+        },
+        {
+            "id": 20,
+            "title": "High",
+            "category": "Illustrations+Comic",
+            "tags": ["Illustrations"],
+           
+            "tech": "Procreate",
+            "date": "October 2024",
+            "image": "2400.PNG"
+           
+           
+        }
+       
+    ]
+}

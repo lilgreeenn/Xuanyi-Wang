@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .gallery {
+            /* ... existing styles ... */
+            transform-style: preserve-3d; /* 确保3D效果 */
+            backface-visibility: hidden; /* 隐藏背面以减少闪烁 */
+            will-change: transform, opacity; /* 提示浏览器优化 */
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="top-navbar">
+        <div class="navbar-left" id="home-link" style="cursor:pointer;">Xuanyi Wang</div>
+        <div class="navbar-right">
+            <a href="#about" class="nav-link" data-page="about">About</a>
+            <a href="resume.png" class="nav-link" id="resume-download">Resume</a>
+            <a href="#projects" class="nav-link" id="projects-link">Projects</a>
+        </div>
+    </nav>
+    <div id="main-content">
+        <button id="layout-toggle" class="layout-toggle-btn">
+            change layout 
+        </button>
+        <!-- 分类和年份悬浮展开菜单 -->
+        <div class="categories-menu">
+            <button class="menu-trigger">All</button>
+            <div class="menu-content">
+                <div class="category-group">
+                    <div class="group-title">Category</div>
+                    <button class="category-btn" data-category="all">All</button>
+                    <button class="category-btn" data-category="Website+APP">Website+APP</button>
+                    <button class="category-btn" data-category="VR+AI">VR + AI</button>
+                    <button class="category-btn" data-category="Game">Game</button>
+                    <button class="category-btn" data-category="Fashion">Fashion</button>
+                    <button class="category-btn" data-category="Animation">Animation</button>
+                    <button class="category-btn" data-category="Illustrations+Comic">Illustrations + Comic</button>
+                </div>
+                <div class="category-group">
+                    <div class="group-title">Year</div>
+                    <button class="year-btn" data-year="all">All</button>
+                    <button class="year-btn" data-year="2025">2025</button>
+                    <button class="year-btn" data-year="2024">2024</button>
+                    <button class="year-btn" data-year="2023">2023</button>
+                </div>
+            </div>
+        </div>
+        <div class="gallery card-container"></div>
+        <div id="project-details" class="project-details">
+            <div class="project-content">
+                <button id="close-details" class="close-btn">&times;</button>
+                <div class="project-header">
+                    <h2 id="project-title"></h2>
+                    <div class="project-meta">
+                        <span id="project-category"></span>
+                        <span id="project-tags"></span>
+                    </div>
+                </div>
+                <div class="project-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: flex-start;">
+                    <div class="project-image-container" style="width:100%;max-width:600px;margin:auto;">
+                        <img id="project-image" src="" alt="">
+                    </div>
+                    <div class="project-info" style="width:100%;max-width:900px;margin:auto;">
+                        <p id="project-description"></p>
+                        <div class="project-details-list">
+                            <div class="detail-item">
+                                <h4>Tech Stack</h4>
+                                <p id="project-tech"></p>
+                            </div>
+                            <div class="detail-item">
+                                <h4>Date</h4>
+                                <p id="project-date"></p>
+                            </div>
+                        </div>
+                        <div id="project-link" class="project-link"></div>
+                    </div>
+                    <div id="project-video-slot" style="grid-column: 1 / span 2; margin-top:24px;"></div>
+                </div>
+                <div class="project-gallery"></div>
+                <div class="project-features"></div>
+                <div class="team-info"></div>
+            </div>
+        </div>
+    </div>
+    <!-- SPA页面内容模板 -->
+    <template id="about-page">
+      <div class="about-hero">
+        <div class="about-left">
+          <div class="about-hello">
+            <span class="about-hello-title">Hello!</span>
+            <svg class="about-hello-wave" width="100" height="18" viewBox="0 0 100 18"><path d="M0 10 Q 10 0, 20 10 T 40 10 T 60 10 T 80 10 T 100 10" stroke="#002fff" stroke-width="2.5" fill="none"/></svg>
+          </div>
+          <div class="about-desc">
+            <span style="color:#002fff;font-weight:600;">I'm Xuanyi Wang</span>, a designer and creative developer working across <b>animation</b>, <b>web</b>, and <b>immersive tech</b>.<br><br>
+            My recent work explores <b>interactive storytelling</b> through Unity, WebGL, and VR (Vision Pro / PC).<br><br>
+            I'm especially interested in the <i>aesthetics of interfaces</i>, <i>real-time rendering</i>, and <i>playful mechanics</i>.<br><br>
+            Currently building experimental games and browser-based experiences—<span style="color:#002fff;font-weight:600;">one line of code at a time</span>.
+          </div>
+          <div class="about-decor">
+            <span class="about-star">★</span>
+            <span class="about-dot"></span>
+            <span class="about-arrow">➔</span>
+          </div>
+        </div>
+        <div class="about-right">
+          <div class="about-card">
+            <img class="about-avatar" src="0707.png" alt="avatar">
+            <div class="about-card-info">
+              <div class="about-card-name">Xuanyi Wang</div>
+              <div class="about-card-meta">Designer / Developer</div>
+              <div class="about-card-contact">
+                <div><span class="about-card-icon">📧</span> wangx078@newschool.edu</div>
+                <div><span class="about-card-icon">📞</span> 4197700613</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="contact-page">
+      <div class="page-content"><h2>Contact</h2><p>This is the Contact page.</p></div>
+    </template>
+    <template id="instagram-page">
+      <div class="page-content"><h2>Instagram</h2><p>This is the Instagram page.</p></div>
+    </template>
+    <script type="module" src="cardModule.js"></script>
+    <script type="module" src="script.js"></script>
+    <script>
+      // SPA导航逻辑
+      const mainContent = document.getElementById('main-content');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const homeLink = document.getElementById('home-link');
+      const templates = {
+        about: document.getElementById('about-page').innerHTML,
+        contact: document.getElementById('contact-page').innerHTML,
+        instagram: document.getElementById('instagram-page').innerHTML
+      };
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const page = link.dataset.page;
+          if (templates[page]) {
+            mainContent.innerHTML = templates[page];
+          }
+        });
+      });
+      homeLink.addEventListener('click', function() {
+        window.location.reload(); // 回到作品集主页面
+      });
+    </script>
+    <script>
+      function animateGallery() {
+        // ... existing code ...
+        requestAnimationFrame(animateGallery); // 使用requestAnimationFrame
+      }
+      animateGallery();
+    </script>
+    <!-- Code injected by live-server -->
+
+</body>
+
+</html>
