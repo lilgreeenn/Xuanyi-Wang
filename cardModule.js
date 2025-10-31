@@ -14,8 +14,50 @@ export function handleScroll(event, cards, currentIndex, totalCards, visibleCard
 let lastClickTime = 0;
 const DOUBLE_CLICK_DELAY = 300;
 
+// 记录上次点击位置和选择的卡片索引（用于循环选择被遮挡的卡片）
+let lastClickPosition = null;
+let lastClickCards = [];
+
 export async function handleCardClick(event) {
-    const card = event.target.closest('.card');
+    // 优化点击检测：允许点击被遮挡的卡片
+    let card = event.target.closest('.card');
+    const clickX = event.clientX;
+    const clickY = event.clientY;
+    
+    // 如果直接点击的不是卡片，或点击位置很近（可能是想选择后面的卡片）
+    if (!card || (lastClickPosition && 
+        Math.abs(clickX - lastClickPosition.x) < 5 && 
+        Math.abs(clickY - lastClickPosition.y) < 5)) {
+        // 使用elementsFromPoint检测点击位置的所有元素
+        const elementsAtPoint = document.elementsFromPoint(clickX, clickY);
+        const cardsAtPoint = elementsAtPoint.filter(el => el.classList.contains('card'));
+        
+        if (cardsAtPoint.length > 0) {
+            // 如果点击位置和上次一样，循环选择后面的卡片
+            if (lastClickPosition && 
+                Math.abs(clickX - lastClickPosition.x) < 5 && 
+                Math.abs(clickY - lastClickPosition.y) < 5 &&
+                lastClickCards.length === cardsAtPoint.length) {
+                // 找到上次选择的卡片在列表中的索引
+                const lastIndex = lastClickCards.indexOf(cardsAtPoint.find(c => c.classList.contains('active')));
+                const nextIndex = (lastIndex + 1) % cardsAtPoint.length;
+                card = cardsAtPoint[nextIndex];
+            } else {
+                // 第一次点击或点击位置不同，选择最前面的卡片
+                card = cardsAtPoint[0];
+                // 保存所有卡片供下次循环使用
+                lastClickCards = [...cardsAtPoint];
+            }
+        }
+        
+        // 保存点击位置
+        lastClickPosition = { x: clickX, y: clickY };
+    } else {
+        // 正常点击，清除上次的记录
+        lastClickPosition = { x: clickX, y: clickY };
+        lastClickCards = [];
+    }
+    
     if (!card) return;
     
     const currentTime = new Date().getTime();
@@ -31,60 +73,44 @@ export async function handleCardClick(event) {
         } catch (error) {
             console.error('Error loading project details:', error);
         }
+        // 清除点击位置记录
+        lastClickPosition = null;
+        lastClickCards = [];
     } else {
-        // 单击 - 原有的卡片动画效果
+        // 单击 - 只移动点击的卡片
         handleSingleClick(card);
     }
     
     lastClickTime = currentTime;
 }
 
-// 分离单击处理逻辑
+// 分离单击处理逻辑 - 只移动点击的卡片，其他卡片保持原位置
 function handleSingleClick(card) {
     if (card.classList.contains('active')) return;
     
     const container = card.parentElement;
-    const cards = Array.from(container.children);
-    const clickedIndex = cards.indexOf(card);
+    const allCards = Array.from(container.children);
     
-    // 计算中心位置
-    const containerWidth = container.offsetWidth;
-    const cardWidth = 300;
-    const centerPosition = (containerWidth - cardWidth) / 2;
-
+    // 获取当前点击的卡片在visibleCards中的索引
+    const visibleCards = allCards.filter(c => c.style.display !== 'none');
+    const clickedIndex = visibleCards.indexOf(card);
+    if (clickedIndex === -1) return;
+    
+    // 更新currentIndex，这样点击的卡片会通过updateCardPositions移到中心
+    window.currentIndex = clickedIndex;
+    
     // 移除其他卡片的active状态
-    cards.forEach(c => c.classList.remove('active'));
+    allCards.forEach(c => c.classList.remove('active'));
     card.classList.add('active');
-
-    // 一次性设置所有卡片的状态
-    requestAnimationFrame(() => {
-        cards.forEach((c, index) => {
-            if (c === card) {
-                // 点击的卡片移到中间并放大
-                c.style.transform = `
-          translateX(${centerPosition}px)
-          scale(1.2)
-          rotate(0deg)
-        `;
-                c.style.zIndex = 1000;
-            } else {
-                // 其他卡片向两侧分散
-                const isLeft = index < clickedIndex;
-                const distance = Math.abs(clickedIndex - index);
-                const offset = isLeft ? -distance * 60 : distance * 60;
-
-                c.style.transform = `
-          translateX(${centerPosition + offset}px)
-          scale(0.8)
-          rotate(${isLeft ? -5 : 5}deg)
-        `;
-                c.style.zIndex = 100 - distance;
-            }
-        });
-    });
-
-    // 显示详情
-    showProjectDetails(card);
+    
+    // 只更新卡片位置，让updateCardPositions处理布局
+    // 这样其他卡片会保持原来的3D堆叠位置
+    if (typeof window.updateCardPositions === 'function') {
+        window.updateCardPositions();
+    }
+    
+    // 显示详情（如果需要的话，可以注释掉这一行）
+    // showProjectDetails(card);
 }
 
 // 添加加载详细信息的函数
@@ -159,7 +185,10 @@ function updateProjectDetailsUI(project) {
         document.getElementById('project-title').textContent = project.title;
         document.getElementById('project-category').textContent = `Category: ${project.category}`;
         document.getElementById('project-tags').textContent = `Tags: ${project.tags.join(', ')}`;
-        document.getElementById('project-image').src = project.image;
+        const projectImg = document.getElementById('project-image');
+        projectImg.dataset.src = project.image;
+        projectImg.src = ''; // 先清空,让懒加载处理
+        loadImage(projectImg);
         
         // 更新详细描述
         let descriptionHTML = '';
@@ -183,16 +212,41 @@ function updateProjectDetailsUI(project) {
         // 更新技术栈和日期
         document.getElementById('project-tech').textContent = project.tech || 'N/A';
         document.getElementById('project-date').textContent = project.date || 'N/A';
-        // 动态插入 Role
+        
+        // 动态插入 Role 和 Team Information
         const detailsList = document.querySelector('.project-details-list');
-        // 先移除旧的 Role
+        
+        // 先移除旧的 Role 和 Team Information
         const oldRole = detailsList.querySelector('.detail-item.role-item');
         if (oldRole) oldRole.remove();
+        const oldTeam = detailsList.querySelector('.detail-item.team-item');
+        if (oldTeam) oldTeam.remove();
+        
+        // 如果有 role，添加 Role 信息
         if (project.role) {
             const roleDiv = document.createElement('div');
             roleDiv.className = 'detail-item role-item';
             roleDiv.innerHTML = `<h4>Role</h4><p>${project.role}</p>`;
             detailsList.appendChild(roleDiv);
+        }
+        
+        // 如果有 team，添加 Team Information（放在和 Tech Stack、Date 一起的位置）
+        if (project.team) {
+            const teamDiv = document.createElement('div');
+            teamDiv.className = 'detail-item team-item';
+            // 让 Team Information 跨越两列，使其和 Tech Stack + Date 的总宽度一样
+            teamDiv.style.gridColumn = '1 / -1';
+            let teamHTML = `<h4>Team Information</h4>`;
+            teamHTML += `<p><strong>Team Size:</strong> ${project.team.size}</p>`;
+            teamHTML += `<p><strong>My Role:</strong> ${project.team.role}</p>`;
+            if (project.team.members) {
+                teamHTML += `<p><strong>Team Members:</strong> ${project.team.members}</p>`;
+            }
+            if (project.team.duration) {
+                teamHTML += `<p><strong>Duration:</strong> ${project.team.duration}</p>`;
+            }
+            teamDiv.innerHTML = teamHTML;
+            detailsList.appendChild(teamDiv);
         }
         
         // 主图下方插入P5.js作品iframe（优先于视频）
@@ -205,7 +259,7 @@ function updateProjectDetailsUI(project) {
             const match = project.videoLink.match(/vimeo\.com\/(\d+)/);
             const vimeoId = match ? match[1] : null;
             if (vimeoId && videoSlot) {
-                videoSlot.innerHTML = `<hr style=\"margin:32px 0 16px 0;\">\n<div style='font-weight:600;font-size:1.1em;margin-bottom:8px;text-align:center;'>Video Demo</div><div style=\"width:100%;margin-bottom:24px;display:flex;justify-content:center;\"><iframe src=\"https://player.vimeo.com/video/${vimeoId}\" width=\"100%\" height=\"420\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen style=\"border-radius:12px;max-width:520px;display:block;margin:auto;\"></iframe></div>`;
+                videoSlot.innerHTML = `<hr style=\"margin:32px 0 16px 0;\">\n<div style='font-weight:600;font-size:1.1em;margin-bottom:8px;text-align:center;'>Video Demo</div><div style=\"width:100%;margin-bottom:24px;display:flex;justify-content:center;\"><iframe src=\"https://player.vimeo.com/video/${vimeoId}\" width=\"100%\" height=\"420\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" style=\"border-radius:12px;max-width:520px;display:block;margin:auto;\"></iframe></div>`;
             } else if (videoSlot) {
                 videoSlot.innerHTML = '';
             }
@@ -219,7 +273,7 @@ function updateProjectDetailsUI(project) {
                 youtubeId = match ? match[1] : '';
             }
             if (youtubeId && videoSlot) {
-                videoSlot.innerHTML = `<hr style=\"margin:32px 0 16px 0;\">\n<div style='font-weight:600;font-size:1.1em;margin-bottom:8px;text-align:center;'>Video Demo</div><div style=\"width:100%;margin-bottom:24px;display:flex;justify-content:center;\"><iframe width=\"100%\" height=\"420\" src=\"https://www.youtube.com/embed/${youtubeId}\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen style=\"border-radius:12px;max-width:520px;display:block;margin:auto;\"></iframe></div>`;
+                videoSlot.innerHTML = `<hr style=\"margin:32px 0 16px 0;\">\n<div style='font-weight:600;font-size:1.1em;margin-bottom:8px;text-align:center;'>Video Demo</div><div style=\"width:100%;margin-bottom:24px;display:flex;justify-content:center;\"><iframe width=\"100%\" height=\"420\" src=\"https://www.youtube.com/embed/${youtubeId}\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen\" style=\"border-radius:12px;max-width:520px;display:block;margin:auto;\"></iframe></div>`;
             } else if (videoSlot) {
                 videoSlot.innerHTML = '';
             }
@@ -235,7 +289,7 @@ function updateProjectDetailsUI(project) {
         if (oldGalleryDivider) oldGalleryDivider.remove();
         if (project.gallery && project.gallery.length > 0) {
             galleryContainer.innerHTML = project.gallery.map(img => 
-                `<img src="${img}" alt="${project.title}">`
+                `<img data-src="${img}" src="" alt="${project.title}" loading="lazy" class="lazy-img">`
             ).join('');
             galleryContainer.style.display = 'grid';
             // 添加标题和分割线
@@ -243,12 +297,20 @@ function updateProjectDetailsUI(project) {
             // 关键：为每个图片添加点击事件，直接放大
             const imgs = Array.from(galleryContainer.querySelectorAll('img'));
             imgs.forEach((img, idx) => {
+                // 立即加载可见区域的图片
+                if (idx < 6) { // 前6张图片立即加载
+                    loadImage(img);
+                }
                 img.onclick = function() {
                     if (window.openLightbox) {
                         window.openLightbox(imgs, idx);
                     }
                 };
             });
+            // 初始化懒加载
+            if (window.initLazyLoading) {
+                setTimeout(() => window.initLazyLoading(), 100);
+            }
         } else {
             galleryContainer.style.display = 'none';
         }
@@ -260,13 +322,17 @@ function updateProjectDetailsUI(project) {
                 <hr style='margin:32px 0 16px 0;'>
                 <div style='font-weight:600;font-size:1.1em;margin-bottom:8px;'>Setting Gallery</div>
                 <div id='setting-gallery' style='display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin:20px 0;width:100%;'>
-                    ${project.settingGallery.map(img => `<img src="${img}" alt="Setting Gallery" style="width:100%;height:250px;object-fit:cover;border-radius:10px;transition:transform 0.3s,filter 0.3s;cursor:pointer;">`).join('')}
+                    ${project.settingGallery.map(img => `<img data-src="${img}" src="" alt="Setting Gallery" loading="lazy" class="lazy-img" style="width:100%;height:250px;object-fit:cover;border-radius:10px;transition:transform 0.3s,filter 0.3s;cursor:pointer;">`).join('')}
                 </div>
             `;
             galleryContainer.insertAdjacentHTML('afterend', html);
             // settingGallery图片点击放大
             const settingImgs = Array.from(document.querySelectorAll('#setting-gallery img'));
             settingImgs.forEach((img, idx) => {
+                // 立即加载前几张图片
+                if (idx < 4) {
+                    loadImage(img);
+                }
                 img.onclick = function() {
                     if (window.openLightbox) {
                         window.openLightbox(settingImgs, idx);
@@ -299,17 +365,10 @@ function updateProjectDetailsUI(project) {
             featuresContainer.style.display = 'none';
         }
         
-        // 更新团队信息（如果存在）
+        // Team Information 现在已经在 project-details-list 中显示了，不需要单独处理
+        // 移除旧的团队信息容器（如果存在）
         const teamContainer = document.querySelector('.team-info');
-        if (project.team) {
-            teamContainer.innerHTML = `
-                <h3>Team Information</h3>
-                <p>Team Size: ${project.team.size}</p>
-                <p>Role: ${project.team.role}</p>
-                <p>Duration: ${project.team.duration}</p>
-            `;
-            teamContainer.style.display = 'block';
-        } else {
+        if (teamContainer) {
             teamContainer.style.display = 'none';
         }
         
@@ -426,13 +485,26 @@ function initializeCategories() {
         // 添加新的事件监听器
         card.addEventListener('click', handleCardClick);
         
-        // 添加悬浮事件
-        card.addEventListener('mouseenter', handleCardHover);
-        card.addEventListener('mouseleave', handleCardLeave);
+        // 添加悬浮事件 - 统一在一个事件中处理
+        card.addEventListener('mouseenter', (e) => {
+            // 设置全局标志，禁用全局鼠标移动效果
+            if (typeof window !== 'undefined') {
+                window.isMouseOverCard = true;
+            }
+            handleCardHover(e);
+        });
         
-        // 添加3D效果的事件监听
+        card.addEventListener('mouseleave', (e) => {
+            // 清除全局标志，恢复全局鼠标移动效果
+            if (typeof window !== 'undefined') {
+                window.isMouseOverCard = false;
+            }
+            handleCardLeave(e);
+            handleCardMouseLeave(e);
+        });
+        
+        // 添加3D旋转效果的事件监听
         card.addEventListener('mousemove', handleCardMouseMove);
-        card.addEventListener('mouseleave', handleCardMouseLeave);
     });
 
     // 添加分类按钮事件监听
@@ -472,6 +544,49 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// 添加节流函数 - 用于频繁触发的事件(如滚动、鼠标移动)
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+// 加载单个图片的辅助函数
+function loadImage(img) {
+    if (img && img.dataset && img.dataset.src) {
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 0.3s ease-in';
+        const imgSrc = img.dataset.src;
+        img.src = imgSrc;
+        img.onload = () => {
+            img.style.opacity = '1';
+            if (img.classList) {
+                img.classList.remove('lazy-img');
+                img.classList.add('loaded');
+            }
+            img.removeAttribute('data-src');
+        };
+        img.onerror = () => {
+            img.style.opacity = '1';
+            if (img.classList) {
+                img.classList.add('error');
+            }
+        };
+    } else if (img && img.src) {
+        // 如果已经有src,直接加载
+        img.onload = () => {
+            if (img.classList) {
+                img.classList.add('loaded');
+            }
+        };
+    }
 }
 
 // 修改handleCardHover函数
@@ -557,10 +672,13 @@ function initializeProjectDetails() {
     }
 }
 
-// 添加鼠标移动事件处理
+// 添加鼠标移动事件处理 - 单个卡片的3D旋转效果
 function handleCardMouseMove(event) {
     const card = event.target.closest('.card');
     if (!card || card.classList.contains('active')) return;
+    
+    // 阻止事件冒泡，避免触发全局鼠标移动效果
+    event.stopPropagation();
 
     const rect = card.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -578,12 +696,19 @@ function handleCardMouseMove(event) {
 
     // 添加hover-effect类以减少transition延迟
     card.classList.add('hover-effect');
-
-    // 应用3D变换
-    const currentTransform = card.style.transform;
-    const baseTransform = currentTransform.split(' rotate')[0]; // 保留基础变换
+    
+    // 获取卡片的基础位置（从updateCardPositions设置的）
+    const visibleCards = Array.from(card.parentElement.children).filter(c => c.style.display !== 'none');
+    const index = visibleCards.indexOf(card);
+    if (index === -1) return;
+    
+    const offset = index - window.currentIndex;
+    
+    // 应用3D变换，保留基础位置
     card.style.transform = `
-        ${baseTransform}
+        translateX(${offset * 150}px)
+        translateY(${offset * 75}px)
+        translateZ(${-Math.abs(offset) * 200}px)
         rotateX(${rotateX}deg)
         rotateY(${rotateY}deg)
         scale(0.8)
@@ -594,19 +719,28 @@ function handleCardMouseMove(event) {
 function handleCardMouseLeave(event) {
     const card = event.target.closest('.card');
     if (!card || card.classList.contains('active')) return;
+    
+    // 阻止事件冒泡
+    event.stopPropagation();
 
     // 移除hover-effect类恢复正常transition
     card.classList.remove('hover-effect');
 
-    // 重置变换
-    const currentTransform = card.style.transform;
-    const baseTransform = currentTransform.split(' rotate')[0];
+    // 重置变换到基础位置
+    const visibleCards = Array.from(card.parentElement.children).filter(c => c.style.display !== 'none');
+    const index = visibleCards.indexOf(card);
+    if (index === -1) return;
+    
+    const offset = index - window.currentIndex;
     card.style.transform = `
-        ${baseTransform}
+        translateX(${offset * 150}px)
+        translateY(${offset * 75}px)
+        translateZ(${-Math.abs(offset) * 200}px)
         rotateX(0deg)
         rotateY(0deg)
         scale(0.8)
     `;
+    card.style.transition = 'transform 0.3s ease-out';
 }
 
 

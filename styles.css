@@ -82,6 +82,8 @@ body.about-fixed {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     perspective: 1000px;
     backface-visibility: hidden;
+    /* 确保所有卡片都能接收鼠标事件，即使被遮挡 */
+    pointer-events: auto;
 }
 
 .card.hover-effect {
@@ -95,6 +97,34 @@ body.about-fixed {
     transition: all 0.5s ease;
     position: relative;
     backface-visibility: hidden;
+}
+
+/* 懒加载图片样式 */
+.lazy-img {
+    opacity: 0;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.lazy-img.loaded {
+    opacity: 1;
+    background: none;
+    animation: none;
+}
+
+.lazy-img.error {
+    opacity: 1;
+    background: #f0f0f0;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 .card-info {

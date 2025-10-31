@@ -23,6 +23,18 @@ const visibleCards = 15;
 let isScrolling = false;
 let scrollTimeout = null;
 
+// 节流函数实现
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
 const layoutToggle = document.getElementById('layout-toggle');
 let isMasonryLayout = false;
 
@@ -73,7 +85,9 @@ function updateCardPositions() {
             scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
         `;
         card.style.transform = transform;
-        card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset));
+        // z-index设置：active卡片最高，其他卡片按距离递减，但保证都能被点击到
+        // 给每个卡片一个最小z-index，确保即使后面的卡片也能响应鼠标事件
+        card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset) + 100);
         if (Math.abs(offset) === 0) {
             card.classList.add('active');
         } else {
@@ -136,6 +150,8 @@ function loadMorePhotos() {
     bindCardEvents();
     totalCards = cards.length;
     updateCardPositions();
+    // 初始化新加载卡片的懒加载
+    setTimeout(() => initLazyLoading(), 100);
 }
 
 // 更新事件监听器
@@ -156,10 +172,18 @@ closeDetails.addEventListener('click', hideProjectDetails);
 // 初始化卡片位置
 updateCardPositions();
 
-// 添加鼠标移动事件处理
-function handleMouseMove(e) {
+// 标记鼠标是否在卡片上，用于禁用全局鼠标移动效果（暴露到全局）
+window.isMouseOverCard = false;
+
+// 节流鼠标移动事件处理 - 全局3D效果（当鼠标不在卡片上时）
+const handleMouseMoveThrottled = throttle((e) => {
+    // 如果鼠标在卡片上或在瀑布流模式，不处理全局3D效果
+    if (window.isMouseOverCard || isMasonryLayout) return;
+    
     const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
     const totalVisible = visibleCards.length;
+    if (totalVisible === 0) return;
+    
     const mouseX = e.clientX / window.innerWidth - 0.5;
     const mouseY = e.clientY / window.innerHeight - 0.5;
     visibleCards.forEach((card, index) => {
@@ -172,11 +196,19 @@ function handleMouseMove(e) {
             translateX(${offset * 150 + moveX}px)
             translateY(${offset * 75 + moveY}px)
             translateZ(${moveZ}px)
-            scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
+            scale(0.8)
         `;
         card.style.transform = transform;
         card.style.transition = 'transform 0.1s ease-out';
     });
+}, 16); // 约60fps
+
+// 添加鼠标移动事件处理
+function handleMouseMove(e) {
+    // 只在鼠标不在卡片上时处理全局3D效果
+    if (!window.isMouseOverCard && !isMasonryLayout) {
+        handleMouseMoveThrottled(e);
+    }
 }
 
 // 初始添加鼠标移动事件监听
@@ -248,12 +280,83 @@ window.addEventListener('load', () => {
     document.body.classList.add('loaded');
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const lazyImages = document.querySelectorAll('.lazy');
-    lazyImages.forEach(img => {
-        img.src = img.dataset.src;
-    });
-});
+// 懒加载图片实现 - 使用 Intersection Observer
+function initLazyLoading() {
+    // 检查浏览器是否支持 Intersection Observer
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        // 添加淡入效果
+                        img.style.opacity = '0';
+                        img.style.transition = 'opacity 0.3s ease-in';
+                        img.src = img.dataset.src;
+                        img.onload = () => {
+                            img.style.opacity = '1';
+                            img.classList.remove('lazy-img');
+                            img.classList.add('loaded');
+                        };
+                        img.onerror = () => {
+                            img.style.opacity = '1';
+                            img.classList.add('error');
+                        };
+                        // 移除 data-src 属性，停止观察
+                        img.removeAttribute('data-src');
+                        observer.unobserve(img);
+                    }
+                }
+            });
+        }, {
+            // 提前200px开始加载
+            rootMargin: '200px',
+            threshold: 0.01
+        });
+
+        // 观察所有懒加载图片
+        const lazyImages = document.querySelectorAll('img.lazy-img[data-src]');
+        lazyImages.forEach(img => imageObserver.observe(img));
+
+        return imageObserver;
+    } else {
+        // 降级方案：不支持 Intersection Observer 的浏览器
+        const lazyImages = document.querySelectorAll('img.lazy-img[data-src]');
+        lazyImages.forEach(img => {
+            img.src = img.dataset.src;
+            img.classList.remove('lazy-img');
+        });
+    }
+}
+
+// 加载单个图片的辅助函数
+function loadImage(img) {
+    if (img && img.dataset && img.dataset.src) {
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 0.3s ease-in';
+        const imgSrc = img.dataset.src;
+        img.src = imgSrc;
+        img.onload = () => {
+            img.style.opacity = '1';
+            if (img.classList) {
+                img.classList.remove('lazy-img');
+                img.classList.add('loaded');
+            }
+            img.removeAttribute('data-src');
+        };
+        img.onerror = () => {
+            img.style.opacity = '1';
+            if (img.classList) {
+                img.classList.add('error');
+            }
+        };
+    } else if (img && img.src) {
+        // 如果已经有src,直接标记为已加载
+        if (img.classList) {
+            img.classList.add('loaded');
+        }
+    }
+}
 
 // 监听滚动事件，加载更多照片
 window.addEventListener('scroll', () => {
@@ -377,24 +480,67 @@ function bindFilterEvents() {
 
 document.addEventListener('DOMContentLoaded', () => {
     bindFilterEvents();
-    // 其他初始化...
+    // 初始化懒加载
+    if (typeof initLazyLoading === 'function') {
+        setTimeout(() => {
+            initLazyLoading();
+            window.initLazyLoading = initLazyLoading;
+            window.loadImage = loadImage;
+        }, 100);
+    }
 });
 
 window.updateCardPositions = updateCardPositions;
 window.currentIndex = currentIndex;
 
+// 确保updateCardPositions在cardModule.js中可用
+if (typeof window !== 'undefined') {
+    window.updateCardPositions = updateCardPositions;
+}
+
 // 重新绑定所有卡片的事件
 function bindCardEvents() {
     cards = document.querySelectorAll('.card');
     cards.forEach(card => {
-        card.removeEventListener('click', handleCardClick);
-        card.removeEventListener('mouseenter', handleCardHover);
-        card.removeEventListener('mouseleave', handleCardLeave);
-        card.removeEventListener('mousemove', handleMouseMove);
+        // 移除旧的事件监听器
+        const oldMouseEnter = card._oldMouseEnter;
+        const oldMouseLeave = card._oldMouseLeave;
+        if (oldMouseEnter) card.removeEventListener('mouseenter', oldMouseEnter);
+        if (oldMouseLeave) card.removeEventListener('mouseleave', oldMouseLeave);
+        
+        // 创建新的事件处理函数，设置标志位
+        const mouseEnterHandler = (e) => {
+            window.isMouseOverCard = true;
+            handleCardHover(e);
+        };
+        
+        const mouseLeaveHandler = (e) => {
+            window.isMouseOverCard = false;
+            handleCardLeave(e);
+            // 鼠标离开卡片时，恢复卡片位置
+            const visibleCards = Array.from(cards).filter(c => c.style.display !== 'none');
+            const index = visibleCards.indexOf(card);
+            if (index !== -1) {
+                const offset = index - window.currentIndex;
+                const transform = `
+                    translateX(${offset * 150}px)
+                    translateY(${offset * 75}px)
+                    translateZ(${-Math.abs(offset) * 200}px)
+                    scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
+                `;
+                card.style.transform = transform;
+                card.style.transition = 'transform 0.3s ease-out';
+            }
+        };
+        
+        // 保存引用以便下次移除
+        card._oldMouseEnter = mouseEnterHandler;
+        card._oldMouseLeave = mouseLeaveHandler;
+        
+        // 绑定事件
         card.addEventListener('click', handleCardClick);
-        card.addEventListener('mouseenter', handleCardHover);
-        card.addEventListener('mouseleave', handleCardLeave);
-        card.addEventListener('mousemove', handleMouseMove);
+        card.addEventListener('mouseenter', mouseEnterHandler);
+        card.addEventListener('mouseleave', mouseLeaveHandler);
     });
 }
 
@@ -422,7 +568,7 @@ fetch('data.json')
       card.dataset.year = year;
 
       card.innerHTML = `
-        <img src="${project.image}" alt="${project.title}">
+        <img data-src="${project.image}" src="" alt="${project.title}" loading="lazy" class="lazy-img">
         <div class="card-info">
           <h3>${project.title}</h3>
           <p>Category: ${project.category}</p>
@@ -436,6 +582,13 @@ fetch('data.json')
     updateCardPositions();
     bindCardEvents();
     bindFilterEvents();
+    // 初始化懒加载
+    setTimeout(() => {
+        initLazyLoading();
+        // 将懒加载函数暴露到全局,供其他模块使用
+        window.initLazyLoading = initLazyLoading;
+        window.loadImage = loadImage;
+    }, 100);
   });
 
 // 灯箱弹窗HTML（只添加一次）

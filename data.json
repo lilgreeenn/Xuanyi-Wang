@@ -9,7 +9,11 @@
             
             "tech": "Unity, Xcode, Blender",
             "date": "May 2025",
-          
+            "team": {
+                "size": "5 people",
+                "role": "Game Designer, 3d modeler, Developer",
+                "members": "Mere Cui, Duoduo Lui, Jade Zhang, Jessica Zhu"
+            },
            "videoLink": "https://vimeo.com/1086496618?share=copy",
             "image": "2000.png",
             "gallery": [
@@ -29,12 +33,16 @@
             "title": "Shadow Ball",
             "category": "Game",
             "tags": ["Unit", "Game"],
-            "description": "A 2–4 player cooperative game where personality meets precision.<br> <br> Take control of four distinct characters: Sheng, Dan, Jing, and Chou. Each with unique abilities inspired by traditional stage archetypes. Work together to guide glowing spirit balls through stylized shadow-and-light arenas using timing, coordination, and character synergy.<br> <br> Set in a world crafted with paper cut and shadow puppetry aesthetics, Shadow Ball blends puzzle solving, action, and collaborative gameplay. The core mechanic, inspired by the ancient game cuju, challenges players to kick, pass, and control shared objects while navigating obstacles and team based goals.<br> <br> Whether you’re strategizing with friends or diving into the rhythm of glowing ball play, Shadow Ball delivers a uniquely artistic and mechanically rich multiplayer experience.",
+            "description": "A 2–4 player cooperative game where personality meets precision.<br> <br> Take control of four distinct characters: Sheng, Dan, Jing, and Chou. Each with unique abilities inspired by traditional stage archetypes. Work together to guide glowing spirit balls through stylized shadow-and-light arenas using timing, coordination, and character synergy.<br> <br> Set in a world crafted with paper cut and shadow puppetry aesthetics, Shadow Ball blends puzzle solving, action, and collaborative gameplay. The core mechanic, inspired by the ancient game cuju, challenges players to kick, pass, and control shared objects while navigating obstacles and team based goals.<br> <br> Whether you're strategizing with friends or diving into the rhythm of glowing ball play, Shadow Ball delivers a uniquely artistic and mechanically rich multiplayer experience.",
 
 
             "tech": "Unity",
             "date": "May 2025",
-          
+            "team": {
+                "size": "2 people",
+                "role": "2d Animation, Character Animation",
+                "members": "Tianyi Li"
+            },
             "videoLink": "https://youtu.be/ZB6g21gglMg",
             "image": "23000.jpg",
             "gallery": [
@@ -83,6 +91,11 @@
            "description": "It is a tapping sticker that will have a pop-up that will earn the station's icon on the user's phone (NFC tag).  <br> <br> Then, users can get the station icon on their phone and explore more stickers to tap, searching around the city.  <br> <br> NFC tap to unlock each subway icon.",
            "tech": "Xcode, NFC",
             "date": "February 2025",
+            "team": {
+                "size": "3 people",
+                "role": "Coder, Designer, 3d modeler",
+                "members": "Carla Budar, Xinyi Shen"
+            },
             
           "videoLink": "https://vimeo.com/1086353325",
             "demoVideo": "https://lilgreeenn.github.io/MusikaJ/index.html",
