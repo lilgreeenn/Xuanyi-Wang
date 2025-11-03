@@ -678,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (resumeBtn) {
     resumeBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      const url = 'resume.png';
+      const url = 'Xuanyi.png';
       const link = document.createElement('a');
       link.href = url;
       link.download = 'XuanyiWang_Resume.png';
