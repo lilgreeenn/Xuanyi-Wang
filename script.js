@@ -48,8 +48,13 @@ layoutToggle.addEventListener('click', () => {
         document.removeEventListener('mousemove', handleMouseMove);
     } else {
         gallery.classList.remove('masonry');
-        gallery.addEventListener('wheel', handleScroll, { passive: false });
-        document.addEventListener('mousemove', handleMouseMove);
+        // 只在非手机端添加滚轮和鼠标事件
+        if (window.innerWidth > 480) {
+            gallery.addEventListener('wheel', handleScroll, { passive: false });
+            if (window.innerWidth > 1024) {
+                document.addEventListener('mousemove', handleMouseMove);
+            }
+        }
         
         // 重新初始化卡片位置
         updateCardPositions();
@@ -73,30 +78,67 @@ function updateCardPositions() {
     const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
     const totalVisible = visibleCards.length;
     if (window.currentIndex >= totalVisible) window.currentIndex = 0;
+    
+    // 手机端使用垂直列表布局
+    const isMobile = window.innerWidth <= 480;
+    
     visibleCards.forEach((card, index) => {
         const offset = index - window.currentIndex;
-        const translateX = offset * 150;
-        const translateY = offset * 75;
-        const translateZ = -Math.abs(offset) * 200;
-        const transform = `
-            translateX(${translateX}px)
-            translateY(${translateY}px)
-            translateZ(${translateZ}px)
-            scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
-        `;
-        card.style.transform = transform;
-        // z-index设置：active卡片最高，其他卡片按距离递减，但保证都能被点击到
-        // 给每个卡片一个最小z-index，确保即使后面的卡片也能响应鼠标事件
-        card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset) + 100);
-        if (Math.abs(offset) === 0) {
-            card.classList.add('active');
-        } else {
+        
+        if (isMobile && !isMasonryLayout) {
+            // 手机端：垂直列表布局，移除所有3D效果
+            card.style.transform = 'none';
+            card.style.position = 'relative';
+            card.style.zIndex = '1';
             card.classList.remove('active');
+            // 所有卡片都显示，按顺序排列
+        } else if (window.innerWidth <= 1024 && !isMasonryLayout) {
+            // iPad端：简化3D效果
+            const translateX = offset * 80;
+            const translateY = offset * 40;
+            const translateZ = -Math.abs(offset) * 100;
+            const scale = Math.abs(offset) === 0 ? 1.1 : 0.85;
+            const transform = `
+                translateX(${translateX}px)
+                translateY(${translateY}px)
+                translateZ(${translateZ}px)
+                scale(${scale})
+            `;
+            card.style.transform = transform;
+            card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset) + 100);
+            if (Math.abs(offset) === 0) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        } else {
+            // 桌面端：保持原有3D效果
+            const translateX = offset * 150;
+            const translateY = offset * 75;
+            const translateZ = -Math.abs(offset) * 200;
+            const transform = `
+                translateX(${translateX}px)
+                translateY(${translateY}px)
+                translateZ(${translateZ}px)
+                scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
+            `;
+            card.style.transform = transform;
+            card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset) + 100);
+            if (Math.abs(offset) === 0) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
         }
     });
 }
 
 function handleScroll(event) {
+    // 手机端不处理滚轮事件，使用原生滚动
+    if (window.innerWidth <= 480 && !isMasonryLayout) {
+        return;
+    }
+    
     event.preventDefault();
     if (isScrolling) return;
     isScrolling = true;
@@ -164,10 +206,91 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-gallery.addEventListener('wheel', handleScroll, {
-    passive: false
+// 只在非手机端添加滚轮事件
+if (window.innerWidth > 480) {
+    gallery.addEventListener('wheel', handleScroll, {
+        passive: false
+    });
+}
+
+// 窗口大小改变时重新绑定
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 480 && !isMasonryLayout) {
+        gallery.addEventListener('wheel', handleScroll, { passive: false });
+    } else {
+        gallery.removeEventListener('wheel', handleScroll);
+    }
 });
 closeDetails.addEventListener('click', hideProjectDetails);
+
+// 触摸滑动支持（移动端）
+let touchStartY = 0;
+let touchEndY = 0;
+let touchStartX = 0;
+let touchEndX = 0;
+let touchStartTime = 0;
+let touchTarget = null;
+const MIN_SWIPE_DISTANCE = 50; // 最小滑动距离
+const MAX_SWIPE_TIME = 300; // 最大滑动时间（毫秒）
+
+gallery.addEventListener('touchstart', (e) => {
+    // 手机端使用原生滚动，不处理触摸滑动切换
+    if (isMasonryLayout || window.innerWidth <= 480) return;
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+    touchStartTime = Date.now();
+    touchTarget = e.target;
+}, { passive: true });
+
+gallery.addEventListener('touchmove', (e) => {
+    // 手机端使用原生滚动
+    if (isMasonryLayout || window.innerWidth <= 480) return;
+    // 如果滑动距离较大，阻止默认行为（避免页面滚动）
+    if (Math.abs(e.touches[0].clientY - touchStartY) > 10) {
+        // 检查是否在卡片上滑动
+        const card = e.target.closest('.card');
+        if (card) {
+            e.preventDefault();
+        }
+    }
+}, { passive: false });
+
+gallery.addEventListener('touchend', (e) => {
+    // 手机端使用原生滚动，不处理触摸滑动切换
+    if (isMasonryLayout || window.innerWidth <= 480) {
+        touchTarget = null;
+        return;
+    }
+    
+    touchEndY = e.changedTouches[0].clientY;
+    touchEndX = e.changedTouches[0].clientX;
+    const touchEndTime = Date.now();
+    const swipeDistanceY = touchStartY - touchEndY;
+    const swipeDistanceX = touchStartX - touchEndX;
+    const swipeTime = touchEndTime - touchStartTime;
+
+    // 检查是否是垂直滑动（而不是水平滑动）
+    const isVerticalSwipe = Math.abs(swipeDistanceY) > Math.abs(swipeDistanceX);
+    
+    // 检查是否是有效的垂直滑动
+    if (isVerticalSwipe && Math.abs(swipeDistanceY) > MIN_SWIPE_DISTANCE && swipeTime < MAX_SWIPE_TIME) {
+        // 检查是否点击在卡片上
+        const card = touchTarget ? touchTarget.closest('.card') : null;
+        if (!card) {
+            // 不在卡片上，执行滑动切换
+            e.preventDefault();
+            const fakeEvent = {
+                deltaY: swipeDistanceY > 0 ? 100 : -100,
+                preventDefault: () => {}
+            };
+            handleScroll(fakeEvent);
+        }
+        // 如果在卡片上，让点击事件处理（不阻止默认行为）
+    }
+    
+    // 重置
+    touchTarget = null;
+}, { passive: false });
 
 // 初始化卡片位置
 updateCardPositions();
@@ -206,13 +329,25 @@ const handleMouseMoveThrottled = throttle((e) => {
 // 添加鼠标移动事件处理
 function handleMouseMove(e) {
     // 只在鼠标不在卡片上时处理全局3D效果
-    if (!window.isMouseOverCard && !isMasonryLayout) {
+    // 移动端不处理鼠标移动效果
+    if (!window.isMouseOverCard && !isMasonryLayout && window.innerWidth > 1024) {
         handleMouseMoveThrottled(e);
     }
 }
 
-// 初始添加鼠标移动事件监听
-document.addEventListener('mousemove', handleMouseMove);
+// 初始添加鼠标移动事件监听（仅桌面端）
+if (window.innerWidth > 1024) {
+    document.addEventListener('mousemove', handleMouseMove);
+}
+
+// 窗口大小改变时重新绑定事件
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 1024) {
+        document.addEventListener('mousemove', handleMouseMove);
+    } else {
+        document.removeEventListener('mousemove', handleMouseMove);
+    }
+});
 
 // 添加鼠标离开时的重置效果
 document.addEventListener('mouseleave', () => {
@@ -442,6 +577,32 @@ function bindFilterEvents() {
     const categoryButtons = document.querySelectorAll('.category-btn');
     const yearButtons = document.querySelectorAll('.year-btn');
     const allBtn = document.querySelector('.menu-trigger');
+    const menuContent = document.querySelector('.menu-content');
+    const categoriesMenu = document.querySelector('.categories-menu');
+    const isMobile = window.innerWidth <= 480;
+
+    // 手机端：点击触发按钮切换菜单显示
+    if (isMobile && allBtn && menuContent) {
+        allBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = menuContent.style.display === 'block' || menuContent.classList.contains('show');
+            if (isOpen) {
+                menuContent.style.display = 'none';
+                menuContent.classList.remove('show');
+            } else {
+                menuContent.style.display = 'block';
+                menuContent.classList.add('show');
+            }
+        });
+
+        // 点击外部关闭菜单
+        document.addEventListener('click', (e) => {
+            if (isMobile && categoriesMenu && !categoriesMenu.contains(e.target)) {
+                menuContent.style.display = 'none';
+                menuContent.classList.remove('show');
+            }
+        });
+    }
 
     // 分类按钮
     categoryButtons.forEach(button => {
@@ -451,6 +612,11 @@ function bindFilterEvents() {
             button.classList.add('active');
             currentCategory = button.dataset.category;
             filterCardsByCategoryAndYear();
+            // 手机端选择后关闭菜单
+            if (isMobile && menuContent) {
+                menuContent.style.display = 'none';
+                menuContent.classList.remove('show');
+            }
         });
     });
 
@@ -462,19 +628,34 @@ function bindFilterEvents() {
             button.classList.add('active');
             currentYear = button.dataset.year;
             filterCardsByCategoryAndYear();
+            // 手机端选择后关闭菜单
+            if (isMobile && menuContent) {
+                menuContent.style.display = 'none';
+                menuContent.classList.remove('show');
+            }
         });
     });
 
-    // All按钮
+    // All按钮（非手机端或作为重置按钮）
     if (allBtn) {
-        allBtn.addEventListener('click', (e) => {
+        const handleAllClick = (e) => {
             e.stopPropagation();
             categoryButtons.forEach(btn => btn.classList.remove('active'));
             yearButtons.forEach(btn => btn.classList.remove('active'));
             currentCategory = 'all';
             currentYear = 'all';
             filterCardsByCategoryAndYear();
-        });
+            // 手机端选择后关闭菜单
+            if (isMobile && menuContent) {
+                menuContent.style.display = 'none';
+                menuContent.classList.remove('show');
+            }
+        };
+        
+        // 只在非手机端或菜单内容中点击时触发重置
+        if (!isMobile) {
+            allBtn.addEventListener('click', handleAllClick);
+        }
     }
 }
 
