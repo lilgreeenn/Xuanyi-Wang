@@ -50,9 +50,9 @@ layoutToggle.addEventListener('click', () => {
         gallery.classList.remove('masonry');
         // 只在非手机端添加滚轮和鼠标事件
         if (window.innerWidth > 480) {
-            gallery.addEventListener('wheel', handleScroll, { passive: false });
+        gallery.addEventListener('wheel', handleScroll, { passive: false });
             if (window.innerWidth > 1024) {
-                document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mousemove', handleMouseMove);
             }
         }
         
@@ -113,21 +113,21 @@ function updateCardPositions() {
             }
         } else {
             // 桌面端：保持原有3D效果
-            const translateX = offset * 150;
-            const translateY = offset * 75;
-            const translateZ = -Math.abs(offset) * 200;
-            const transform = `
-                translateX(${translateX}px)
-                translateY(${translateY}px)
-                translateZ(${translateZ}px)
-                scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
-            `;
-            card.style.transform = transform;
-            card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset) + 100);
-            if (Math.abs(offset) === 0) {
-                card.classList.add('active');
-            } else {
-                card.classList.remove('active');
+        const translateX = offset * 150;
+        const translateY = offset * 75;
+        const translateZ = -Math.abs(offset) * 200;
+        const transform = `
+            translateX(${translateX}px)
+            translateY(${translateY}px)
+            translateZ(${translateZ}px)
+            scale(${Math.abs(offset) === 0 ? 1.2 : 0.8})
+        `;
+        card.style.transform = transform;
+        card.style.zIndex = Math.abs(offset) === 0 ? 1000 : (totalVisible - Math.abs(offset) + 100);
+        if (Math.abs(offset) === 0) {
+            card.classList.add('active');
+        } else {
+            card.classList.remove('active');
             }
         }
     });
@@ -208,8 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 只在非手机端添加滚轮事件
 if (window.innerWidth > 480) {
-    gallery.addEventListener('wheel', handleScroll, {
-        passive: false
+gallery.addEventListener('wheel', handleScroll, {
+    passive: false
     });
 }
 
@@ -337,7 +337,7 @@ function handleMouseMove(e) {
 
 // 初始添加鼠标移动事件监听（仅桌面端）
 if (window.innerWidth > 1024) {
-    document.addEventListener('mousemove', handleMouseMove);
+document.addEventListener('mousemove', handleMouseMove);
 }
 
 // 窗口大小改变时重新绑定事件
@@ -413,7 +413,253 @@ gallery.addEventListener('mousemove', (e) => {
 
 window.addEventListener('load', () => {
     document.body.classList.add('loaded');
+    // 初始化鼠标轨迹效果
+    initCursorTrail();
 });
+
+// ========== 鼠标轨迹效果 - 线条版 ==========
+function initCursorTrail() {
+    // 只在桌面端启用
+    if (window.innerWidth <= 1024) return;
+    
+    const trailContainer = document.getElementById('cursor-trail');
+    if (!trailContainer) return;
+    
+    // 创建SVG容器
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    
+    // 创建渐变定义 - 简洁单色
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    gradient.setAttribute('id', 'trailGradient');
+    gradient.setAttribute('x1', '0%');
+    gradient.setAttribute('y1', '0%');
+    gradient.setAttribute('x2', '100%');
+    gradient.setAttribute('y2', '0%');
+    
+    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop1.setAttribute('offset', '0%');
+    stop1.setAttribute('class', 'trail-gradient');
+    
+    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop2.setAttribute('offset', '100%');
+    stop2.setAttribute('class', 'trail-gradient-end');
+    
+    gradient.appendChild(stop1);
+    gradient.appendChild(stop2);
+    defs.appendChild(gradient);
+    svg.appendChild(defs);
+    trailContainer.appendChild(svg);
+    
+    // 创建主光标
+    const cursorMain = document.createElement('div');
+    cursorMain.className = 'cursor-main';
+    document.body.appendChild(cursorMain);
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+    let points = []; // 存储轨迹点
+    let path = null; // 当前路径
+    let lastPoint = null;
+    let isDrawing = false;
+    const MAX_POINTS = 20; // 每条轨迹的最大点数
+    const POINT_DISTANCE = 3; // 点之间的最小距离
+    
+    // 更新鼠标位置
+    const handleMouseMove = (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // 平滑跟随主光标
+        const updateCursor = () => {
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            cursorMain.style.left = cursorX + 'px';
+            cursorMain.style.top = cursorY + 'px';
+            
+            if (Math.abs(mouseX - cursorX) > 0.5 || Math.abs(mouseY - cursorY) > 0.5) {
+                requestAnimationFrame(updateCursor);
+            }
+        };
+        updateCursor();
+        
+        // 检查距离，决定是否添加新点
+        if (!lastPoint || 
+            Math.sqrt(Math.pow(mouseX - lastPoint.x, 2) + Math.pow(mouseY - lastPoint.y, 2)) > POINT_DISTANCE) {
+            addPoint(mouseX, mouseY);
+        }
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // 添加轨迹点
+    function addPoint(x, y) {
+        const point = { x, y, time: Date.now() };
+        
+        if (!isDrawing) {
+            // 开始新路径
+            startNewPath();
+            isDrawing = true;
+        }
+        
+        points.push(point);
+        lastPoint = point;
+        
+        // 更新路径
+        updatePath();
+        
+        // 限制点数
+        if (points.length > MAX_POINTS) {
+            points.shift();
+        }
+        
+        // 如果点数过多，创建新路径
+        if (points.length >= MAX_POINTS) {
+            finishPath();
+            startNewPath();
+            points = [point];
+            lastPoint = point;
+        }
+    }
+    
+    // 开始新路径
+    function startNewPath() {
+        path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('class', 'trail-path');
+        svg.appendChild(path);
+    }
+    
+    // 更新路径 - 简洁平滑
+    function updatePath() {
+        if (!path || points.length < 2) return;
+        
+        let d = '';
+        
+        if (points.length === 2) {
+            // 只有两个点时直接连线
+            d = `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+        } else if (points.length === 3) {
+            // 三个点时使用二次贝塞尔曲线
+            d = `M ${points[0].x} ${points[0].y} Q ${points[1].x} ${points[1].y} ${points[2].x} ${points[2].y}`;
+        } else {
+            // 多个点时使用平滑的曲线连接
+            d = `M ${points[0].x} ${points[0].y}`;
+            
+            for (let i = 1; i < points.length; i++) {
+                const prev = points[i - 1];
+                const curr = points[i];
+                
+                if (i === 1) {
+                    // 第一个线段，使用二次贝塞尔曲线
+                    const next = points[i + 1] || curr;
+                    const cpX = curr.x;
+                    const cpY = curr.y;
+                    const endX = (curr.x + next.x) / 2;
+                    const endY = (curr.y + next.y) / 2;
+                    d += ` Q ${cpX} ${cpY} ${endX} ${endY}`;
+                } else if (i < points.length - 1) {
+                    // 中间点，使用平滑的二次贝塞尔曲线
+                    const next = points[i + 1];
+                    const cpX = curr.x;
+                    const cpY = curr.y;
+                    const endX = (curr.x + next.x) / 2;
+                    const endY = (curr.y + next.y) / 2;
+                    d += ` Q ${cpX} ${cpY} ${endX} ${endY}`;
+                } else {
+                    // 最后一个点，直接连接到实际位置
+                    d += ` L ${curr.x} ${curr.y}`;
+                }
+            }
+        }
+        
+        path.setAttribute('d', d);
+    }
+    
+    // 完成路径（开始淡出）
+    function finishPath() {
+        if (path) {
+            // 路径会自动淡出（通过CSS动画）
+            setTimeout(() => {
+                if (path && path.parentNode) {
+                    path.parentNode.removeChild(path);
+                }
+            }, 1500);
+        }
+    }
+    
+    // 鼠标停止移动时完成当前路径
+    let moveTimeout = null;
+    document.addEventListener('mousemove', () => {
+        clearTimeout(moveTimeout);
+        moveTimeout = setTimeout(() => {
+            if (isDrawing && points.length > 0) {
+                finishPath();
+                isDrawing = false;
+                points = [];
+                lastPoint = null;
+            }
+        }, 100);
+    });
+    
+    // 悬停效果
+    const updateHoverElements = () => {
+        const hoverElements = document.querySelectorAll('a, button, .card, .nav-link, .category-btn, .year-btn, .menu-trigger, .layout-toggle-btn');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorMain.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorMain.classList.remove('hover');
+            });
+        });
+    };
+    
+    // 初始绑定
+    updateHoverElements();
+    
+    // 动态内容加载后重新绑定
+    const observer = new MutationObserver(() => {
+        updateHoverElements();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    // 点击效果 - 简洁
+    document.addEventListener('mousedown', () => {
+        cursorMain.classList.add('click');
+    });
+    document.addEventListener('mouseup', () => {
+        cursorMain.classList.remove('click');
+    });
+    
+    // 鼠标离开窗口时隐藏
+    document.addEventListener('mouseleave', () => {
+        cursorMain.style.opacity = '0';
+        if (isDrawing) {
+            finishPath();
+            isDrawing = false;
+            points = [];
+            lastPoint = null;
+        }
+    });
+    document.addEventListener('mouseenter', () => {
+        cursorMain.style.opacity = '1';
+    });
+    
+    // 窗口大小改变时重新检查
+    window.addEventListener('resize', () => {
+        if (window.innerWidth <= 1024) {
+            cursorMain.style.display = 'none';
+            trailContainer.style.display = 'none';
+        } else {
+            cursorMain.style.display = 'block';
+            trailContainer.style.display = 'block';
+        }
+    });
+}
 
 // 懒加载图片实现 - 使用 Intersection Observer
 function initLazyLoading() {
