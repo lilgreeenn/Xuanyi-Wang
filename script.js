@@ -6,6 +6,13 @@ import {
     playSound
 } from './cardModule.js';
 
+import {
+    initRouter,
+    navigateToProject,
+    showHomePage,
+    getProjectIdFromCard
+} from './router.js';
+
 const gallery = document.querySelector('.gallery');
 let cards = document.querySelectorAll('.card');
 const categoryButtons = document.querySelectorAll('.category-btn');
@@ -993,6 +1000,7 @@ fetch('data.json')
       }
       card.dataset.original = 'true';
       card.dataset.year = year;
+      card.dataset.projectId = project.id; // 添加项目ID
 
       card.innerHTML = `
         <img data-src="${project.image}" src="" alt="${project.title}" loading="lazy" class="lazy-img">
@@ -1123,7 +1131,33 @@ document.addEventListener('DOMContentLoaded', function() {
     projectsBtn.addEventListener('click', function(e) {
       e.preventDefault();
       document.body.classList.remove('about-fixed');
-      window.location.reload();
+      if (window.showHomePage) {
+        window.showHomePage();
+      } else {
+        window.location.reload();
+      }
     });
   }
+
+  // 返回按钮事件
+  const backBtn = document.getElementById('back-to-home');
+  if (backBtn) {
+    backBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (window.showHomePage) {
+        window.showHomePage();
+      } else {
+        window.location.hash = '';
+        window.location.reload();
+      }
+    });
+  }
+
+  // 初始化路由
+  initRouter();
+  
+  // 将路由函数暴露到全局
+  window.navigateToProject = navigateToProject;
+  window.showHomePage = showHomePage;
+  window.getProjectIdFromCard = getProjectIdFromCard;
 });

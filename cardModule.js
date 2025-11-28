@@ -64,14 +64,25 @@ export async function handleCardClick(event) {
     const timeDiff = currentTime - lastClickTime;
     
     if (timeDiff < DOUBLE_CLICK_DELAY) {
-        // 双击 - 加载详细信息
+        // 双击 - 导航到项目详情页面
         event.preventDefault();
         event.stopPropagation();
         console.log('Double click detected on card:', card);
         try {
-            await loadProjectDetails(card);
+            // 使用路由导航到项目页面
+            if (window.navigateToProject) {
+                const projectId = window.getProjectIdFromCard(card);
+                if (projectId) {
+                    window.navigateToProject(projectId);
+                } else {
+                    console.error('Could not find project ID for card');
+                }
+            } else {
+                // 降级方案：使用原来的弹窗
+                await loadProjectDetails(card);
+            }
         } catch (error) {
-            console.error('Error loading project details:', error);
+            console.error('Error navigating to project:', error);
         }
         // 清除点击位置记录
         lastClickPosition = null;

@@ -29,34 +29,116 @@
         </div>
     </nav>
     <div id="main-content">
-        <button id="layout-toggle" class="layout-toggle-btn">
-            change layout 
-        </button>
-        
-        <div class="categories-menu">
-            <button class="menu-trigger">All</button>
-            <div class="menu-content">
-                <div class="category-group">
-                    <div class="group-title">Category</div>
-                    <button class="category-btn" data-category="all">All</button>
-                    <button class="category-btn" data-category="Website+APP">Website+APP</button>
-                    <button class="category-btn" data-category="VR+AI">VR + AI</button>
-                    <button class="category-btn" data-category="Game">Game</button>
-                    <button class="category-btn" data-category="Fashion">Fashion</button>
-                    <button class="category-btn" data-category="Animation">Animation</button>
-                    <button class="category-btn" data-category="Illustrations+Comic">Illustrations + Comic</button>
-                </div>
-                <div class="category-group">
-                    <div class="group-title">Year</div>
-                    <button class="year-btn" data-year="all">All</button>
-                    <button class="year-btn" data-year="2025">2025</button>
-                    <button class="year-btn" data-year="2024">2024</button>
-                    <button class="year-btn" data-year="2023">2023</button>
+        <!-- 主页内容 -->
+        <div id="home-page" class="page-container">
+            <button id="layout-toggle" class="layout-toggle-btn">
+                change layout 
+            </button>
+            
+            <div class="categories-menu">
+                <button class="menu-trigger">All</button>
+                <div class="menu-content">
+                    <div class="category-group">
+                        <div class="group-title">Category</div>
+                        <button class="category-btn" data-category="all">All</button>
+                        <button class="category-btn" data-category="Website+APP">Website+APP</button>
+                        <button class="category-btn" data-category="VR+AI">VR + AI</button>
+                        <button class="category-btn" data-category="Game">Game</button>
+                        <button class="category-btn" data-category="Fashion">Fashion</button>
+                        <button class="category-btn" data-category="Animation">Animation</button>
+                        <button class="category-btn" data-category="Illustrations+Comic">Illustrations + Comic</button>
+                    </div>
+                    <div class="category-group">
+                        <div class="group-title">Year</div>
+                        <button class="year-btn" data-year="all">All</button>
+                        <button class="year-btn" data-year="2025">2025</button>
+                        <button class="year-btn" data-year="2024">2024</button>
+                        <button class="year-btn" data-year="2023">2023</button>
+                    </div>
                 </div>
             </div>
+            <div class="gallery card-container"></div>
         </div>
-        <div class="gallery card-container"></div>
-        <div id="project-details" class="project-details">
+
+        <!-- 项目详情页面 -->
+        <div id="project-page" class="page-container" style="display: none;">
+            <!-- 左侧导航栏 -->
+            <div class="project-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-name" id="sidebar-home-link" style="cursor: pointer;">Xuanyi Wang</div>
+                </div>
+                <nav class="project-nav" id="project-nav">
+                    <!-- 项目列表将在这里动态生成 -->
+                </nav>
+            </div>
+            
+            <!-- 主内容区域 -->
+            <div class="project-content-full">
+                <!-- 主图 -->
+                <div class="project-hero-image" id="project-hero-section">
+                    <img id="project-image-full" src="" alt="">
+                </div>
+                
+                <!-- 项目标题 -->
+                <div class="project-header-minimal" id="project-title-section">
+                    <h1 id="project-title-full" class="project-title-large"></h1>
+                </div>
+                
+                <!-- 文字内容区域 - 两列布局 -->
+                <div class="project-text-content">
+                    <div class="project-content-grid">
+                        <!-- 左列：详情信息 -->
+                        <div class="project-meta-column" id="project-meta-section">
+                            <div class="meta-item">
+                                <span class="meta-label">Tech Stack</span>
+                                <span id="project-tech-full" class="meta-value"></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Date</span>
+                                <span id="project-date-full" class="meta-value"></span>
+                            </div>
+                            <div class="meta-item" id="project-category-meta" style="display: none;">
+                                <span class="meta-label">Category</span>
+                                <span id="project-category-full" class="meta-value"></span>
+                            </div>
+                            <div class="meta-item" id="project-tags-meta" style="display: none;">
+                                <span class="meta-label">Tags</span>
+                                <span id="project-tags-full" class="meta-value"></span>
+                            </div>
+                            
+                            <div class="project-details-list" id="project-details-list-full"></div>
+                            <div class="project-features-full"></div>
+                            <div class="team-info-full"></div>
+                            
+                            <div id="project-link-full" class="project-link"></div>
+                        </div>
+                        
+                        <!-- 右列：描述文字 -->
+                        <div class="project-description-column">
+                            <div id="project-description-section" class="project-description"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 视频区域 -->
+                <div id="project-video-slot-full" class="project-video-section"></div>
+                
+                <!-- 图片画廊 -->
+                <div class="project-gallery-full" id="project-gallery-section"></div>
+                <div id="setting-gallery-container-full"></div>
+            </div>
+            
+            <!-- 右侧目录 -->
+            <div class="project-toc">
+                <div class="toc-header">Contents</div>
+                <nav class="toc-nav" id="project-toc-nav">
+                    <!-- 目录项将在这里动态生成 -->
+                </nav>
+            </div>
+        </div>
+
+        <!-- 保留原有的弹窗（用于向后兼容，但默认隐藏） -->
+        <div id="project-details" class="project-details" style="display: none;">
             <div class="project-content">
                 <button id="close-details" class="close-btn">&times;</button>
                 <div class="project-header">
@@ -134,6 +216,7 @@
       <div class="page-content"><h2>Instagram</h2><p>This is the Instagram page.</p></div>
     </template>
     <script type="module" src="cardModule.js"></script>
+    <script type="module" src="router.js"></script>
     <script type="module" src="script.js"></script>
     <script>
       // SPA导航逻辑
@@ -155,7 +238,11 @@
         });
       });
       homeLink.addEventListener('click', function() {
-        window.location.reload(); // 回到作品集主页面
+        if (window.showHomePage) {
+          window.showHomePage();
+        } else {
+          window.location.reload(); // 回到作品集主页面
+        }
       });
     </script>
     <script>
