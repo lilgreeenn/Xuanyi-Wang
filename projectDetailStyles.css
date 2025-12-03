@@ -342,9 +342,9 @@ body:has(#project-page.archives-project:not([style*="display: none"])) {
 }
 
 .project-detail-gallery img {
-    width: 90vw !important;
-    max-width: 90vw !important;
-    min-width: 90vw !important;
+    width: 70vw !important;
+    max-width: 70vw !important;
+    min-width: 70vw !important;
     height: auto !important;
     max-height: none !important;
     object-fit: contain !important;

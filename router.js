@@ -559,8 +559,8 @@ function renderProjectPage(project, isFeatured = true) {
                     // 归档项目：正常网格布局，不需要内联样式，由CSS控制
                     imgEl.style.cssText = '';
                 } else {
-                    // 精选项目：宽度自适应屏幕但稍小一点（90vw）
-                    imgEl.style.cssText = 'width:90vw !important;max-width:90vw !important;min-width:90vw !important;height:auto !important;object-fit:contain !important;display:block !important;margin:80px auto !important;cursor:pointer;background:#000 !important;margin-left:auto !important;margin-right:auto !important;box-sizing:border-box !important;padding:0 !important;';
+                    // 精选项目：宽度自适应屏幕（70vw）
+                    imgEl.style.cssText = 'width:70vw !important;max-width:70vw !important;min-width:70vw !important;height:auto !important;object-fit:contain !important;display:block !important;margin:80px auto !important;cursor:pointer;background:#000 !important;margin-left:auto !important;margin-right:auto !important;box-sizing:border-box !important;padding:0 !important;';
                 }
                 
                 imgEl.onclick = () => {
