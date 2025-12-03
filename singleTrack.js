@@ -72,9 +72,16 @@ export function initSingleTrack() {
         .then(data => {
             console.log('Projects data loaded:', data.projects.length, 'projects');
             projectsData = data;
+            
+            // 将数据共享给router.js
+            if (window.setProjectsData) {
+                window.setProjectsData(data);
+            }
+            
             createProjectScreens();
             initFloatingCards();
             initScrollSnap();
+            initIntroBlurEffect();
         })
         .catch(err => {
             console.error('Failed to load projects data:', err);
@@ -159,54 +166,168 @@ function initFloatingCards() {
     const bgContainer = document.getElementById('floating-cards-bg');
     if (!bgContainer || !projectsData) return;
     
-    // 创建多个卡片在背景中缓慢漂浮
-    projectsData.projects.slice(0, 8).forEach((project, index) => {
+    // 使用所有项目照片创建背景
+    const allProjects = projectsData.projects;
+    
+    // 创建所有项目照片，随机位置、大小、重叠，缓慢淡入
+    allProjects.forEach((project, index) => {
         const card = document.createElement('div');
         card.className = 'floating-card';
-        card.style.cssText = `
-            position: absolute;
-            width: 300px;
-            height: 200px;
-            background: url('${project.image}') center/cover;
-            border-radius: 8px;
-            opacity: 0.3;
-            transform: translate(${Math.random() * 100 - 50}vw, ${Math.random() * 100 - 50}vh) 
-                       rotate(${Math.random() * 360}deg) 
-                       scale(${0.4 + Math.random() * 0.3});
-            transition: transform 20s linear;
-            pointer-events: none;
-        `;
-        bgContainer.appendChild(card);
-        floatingCards.push(card);
+        card.dataset.cardIndex = index;
         
-        // 启动漂浮动画
-        animateFloatingCard(card, index);
+        const img = document.createElement('img');
+        img.src = project.image;
+        img.alt = project.title;
+        img.loading = 'lazy';
+        card.appendChild(img);
+        
+        bgContainer.appendChild(card);
+        
+        // 随机位置（允许重叠和超出边界）
+        const startX = Math.random() * 140 - 20; // -20% 到 120%
+        const startY = Math.random() * 140 - 20;
+        
+        // 随机大小
+        const scale = 0.2 + Math.random() * 0.5; // 0.2-0.7
+        const cardWidth = 150 + Math.random() * 200; // 150-350px
+        const cardHeight = cardWidth * (0.6 + Math.random() * 0.4); // 保持一定比例
+        
+        // 随机旋转角度
+        const rotation = (Math.random() - 0.5) * 30; // -15度到15度
+        
+        // 随机淡入淡出循环参数
+        const delay = Math.random() * 8; // 0-8秒初始延迟，让它们错开出现
+        const fadeInDuration = 2 + Math.random() * 2; // 2-4秒淡入
+        const stayDuration = 3 + Math.random() * 4; // 3-7秒停留
+        const fadeOutDuration = 2 + Math.random() * 2; // 2-4秒淡出
+        const waitDuration = 1 + Math.random() * 2; // 1-3秒等待
+        const totalDuration = fadeInDuration + stayDuration + fadeOutDuration + waitDuration;
+        const finalOpacity = 0.08 + Math.random() * 0.12; // 最终透明度 0.08-0.2
+        
+        // 计算百分比位置（用于keyframes）
+        const fadeInPercent = (fadeInDuration / totalDuration) * 100;
+        const stayEndPercent = ((fadeInDuration + stayDuration) / totalDuration) * 100;
+        const fadeOutEndPercent = ((fadeInDuration + stayDuration + fadeOutDuration) / totalDuration) * 100;
+        
+        // 创建自定义keyframes（使用内联样式和动态keyframes）
+        const animationName = `fadeInOutCard-${index}`;
+        const keyframes = `
+            @keyframes ${animationName} {
+                0% { opacity: 0; }
+                ${fadeInPercent}% { opacity: ${finalOpacity}; }
+                ${stayEndPercent}% { opacity: ${finalOpacity}; }
+                ${fadeOutEndPercent}% { opacity: 0; }
+                100% { opacity: 0; }
+            }
+        `;
+        
+        // 添加动态样式
+        if (!document.getElementById('dynamic-card-styles')) {
+            const styleSheet = document.createElement('style');
+            styleSheet.id = 'dynamic-card-styles';
+            document.head.appendChild(styleSheet);
+        }
+        const styleSheet = document.getElementById('dynamic-card-styles');
+        styleSheet.textContent += keyframes;
+        
+        // 设置初始样式
+        card.style.left = `${startX}%`;
+        card.style.top = `${startY}%`;
+        card.style.width = `${cardWidth}px`;
+        card.style.height = `${cardHeight}px`;
+        card.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+        card.style.opacity = '0'; // 初始透明
+        card.style.animationDelay = `${delay}s`;
+        card.style.animationDuration = `${totalDuration}s`;
+        card.style.animationName = animationName;
+        card.style.animationIterationCount = 'infinite';
+        card.style.animationTimingFunction = 'ease-in-out';
     });
+    
+    floatingCards = Array.from(bgContainer.querySelectorAll('.floating-card'));
 }
 
-// 漂浮卡片动画
-function animateFloatingCard(card, index) {
-    const duration = 20 + Math.random() * 10; // 20-30秒
-    const startX = Math.random() * 100;
-    const startY = Math.random() * 100;
-    const endX = (startX + 50 + Math.random() * 50) % 100;
-    const endY = (startY + 50 + Math.random() * 50) % 100;
+// 漂浮卡片动画现在使用CSS动画，不需要JavaScript动画函数
+
+// 初始化介绍文字模糊效果
+function initIntroBlurEffect() {
+    const introContent = document.getElementById('intro-content');
+    const textWrapper = document.getElementById('intro-text-wrapper');
+    const clearLayer = textWrapper.querySelector('.intro-text-clear');
+    const blurLayer = document.getElementById('intro-text-blur');
     
-    const animate = () => {
-        const progress = (Date.now() / 1000) % duration / duration;
-        const x = startX + (endX - startX) * progress;
-        const y = startY + (endY - startY) * progress;
-        const rotation = progress * 360;
+    if (!introContent || !textWrapper || !clearLayer || !blurLayer) return;
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let isActive = false;
+    const blurRadius = 30; // 模糊圆圈的半径
+    const transitionRadius = 20; // 过渡区域的半径
+    
+    // 使用requestAnimationFrame平滑更新
+    function updateBlur() {
+        if (isActive) {
+            // 平滑跟随鼠标
+            currentX += (mouseX - currentX) * 0.15;
+            currentY += (mouseY - currentY) * 0.15;
+        } else {
+            // 鼠标离开时，平滑移动到中心外
+            const rect = introContent.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            currentX += (centerX - currentX) * 0.1;
+            currentY += (centerY - currentY) * 0.1;
+        }
         
-        card.style.transform = `
-            translate(${x}vw, ${y}vh) 
-            rotate(${rotation}deg) 
-            scale(${0.4 + Math.random() * 0.3})
-        `;
+        // 获取元素相对于视口的位置
+        const rect = introContent.getBoundingClientRect();
+        const relativeX = currentX - rect.left;
+        const relativeY = currentY - rect.top;
         
-        requestAnimationFrame(animate);
-    };
-    animate();
+        // 创建径向渐变遮罩：圆圈内透明（显示模糊层），圆圈外不透明（显示清晰层）
+        // 使用平滑过渡边缘
+        const clearMask = `radial-gradient(circle ${blurRadius + transitionRadius}px at ${relativeX}px ${relativeY}px, 
+            transparent 0%, 
+            transparent ${blurRadius - transitionRadius}px, 
+            rgba(0,0,0,0.2) ${blurRadius}px, 
+            rgba(0,0,0,1) ${blurRadius + transitionRadius}px)`;
+        
+        // 应用遮罩到清晰层：圆圈内隐藏，圆圈外显示
+        clearLayer.style.maskImage = clearMask;
+        clearLayer.style.webkitMaskImage = clearMask;
+        
+        // 模糊层始终显示，但只在圆形区域内可见（通过清晰层的遮罩控制）
+        if (isActive) {
+            blurLayer.style.opacity = '1';
+        } else {
+            // 检查是否还在内容区域内
+            const distance = Math.sqrt(
+                Math.pow(relativeX - rect.width / 2, 2) + Math.pow(relativeY - rect.height / 2, 2)
+            );
+            if (distance > blurRadius + transitionRadius + 100) {
+                blurLayer.style.opacity = '0';
+            }
+        }
+        
+        requestAnimationFrame(updateBlur);
+    }
+    
+    // 监听鼠标移动
+    introContent.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        isActive = true;
+    });
+    
+    // 鼠标离开时恢复
+    introContent.addEventListener('mouseleave', () => {
+        isActive = false;
+    });
+    
+    // 开始动画循环
+    updateBlur();
 }
 
 // 初始化滚动snap

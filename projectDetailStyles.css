@@ -1,0 +1,451 @@
+/* ============================================
+   项目详情页面样式（参考图片布局）
+   ============================================ */
+
+/* 项目详情页面容器 */
+.project-detail-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 10004;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 80px;
+}
+
+/* 项目详情页导航栏 */
+.project-detail-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 60px;
+    background: #fff;
+    z-index: 10005;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.project-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex: 1;
+}
+
+.project-nav-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.project-nav-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.project-nav-link {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: #666;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.project-nav-link:hover {
+    color: #000;
+}
+
+.project-nav-name {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.project-nav-name:hover {
+    opacity: 0.7;
+}
+
+/* 项目详情内容区域 */
+.project-detail-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 60px 120px;
+    box-sizing: border-box;
+}
+
+/* You may also like 部分使用全屏宽度 */
+.you-may-also-like-section {
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding-left: 60px;
+    padding-right: 60px;
+    box-sizing: border-box;
+}
+
+/* 项目标题区域 */
+.project-detail-title-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.project-detail-title {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #000;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* 项目描述区域 */
+.project-detail-description-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.project-detail-description {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    font-weight: 300;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.project-detail-description p {
+    margin: 0 0 20px 0;
+}
+
+.project-detail-description p:last-child {
+    margin-bottom: 0;
+}
+
+/* 项目详情信息区域 */
+.project-detail-meta-section {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.project-meta-grid {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.project-detail-meta-section .meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+.project-detail-meta-section .meta-label {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.project-detail-meta-section .meta-value {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    color: #000;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/* 视频区域 */
+.project-detail-video {
+    width: 100%;
+    margin-bottom: 80px;
+    text-align: center;
+}
+
+.project-detail-video iframe {
+    width: 100%;
+    max-width: 100%;
+    height: 600px;
+    border: none;
+    display: block;
+    margin: 0 auto;
+}
+
+/* 图片画廊 */
+.project-detail-gallery {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.project-detail-gallery img {
+    width: 100%;
+    height: auto;
+    max-height: 900px;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 40px;
+    cursor: pointer;
+    background: #f5f5f5;
+    transition: opacity 0.3s ease;
+}
+
+.project-detail-gallery img:hover {
+    opacity: 0.9;
+}
+
+.project-detail-gallery img:last-child {
+    margin-bottom: 0;
+}
+
+/* You may also like 部分 */
+.you-may-also-like-section {
+    margin-top: 120px;
+    margin-bottom: 80px;
+    padding-top: 60px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding-left: 60px;
+    padding-right: 60px;
+    box-sizing: border-box;
+}
+
+.you-may-also-like-title {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: #000;
+    text-align: center;
+    margin: 0 0 40px 0;
+    letter-spacing: -0.01em;
+}
+
+.you-may-also-like-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.you-may-also-like-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    flex: 1;
+    padding: 10px 0;
+    width: calc(100% - 152px); /* 减去两个箭头按钮的宽度和gap */
+    max-width: 100%;
+}
+
+.you-may-also-like-carousel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.you-may-also-like-item {
+    position: relative;
+    flex: 0 0 calc(33.333% - 14px);
+    min-width: calc(33.333% - 14px);
+    height: 500px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #f5f5f5;
+    border-radius: 4px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.you-may-also-like-item:hover {
+    transform: translateY(-4px);
+    opacity: 0.9;
+}
+
+.you-may-also-like-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.you-may-also-like-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.you-may-also-like-item:hover .you-may-also-like-overlay {
+    opacity: 1;
+}
+
+.you-may-also-like-item-title {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.you-may-also-like-nav-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.you-may-also-like-nav-btn:hover {
+    background: #333;
+    border-color: #333;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.you-may-also-like-nav-btn:active {
+    transform: scale(0.95);
+}
+
+.you-may-also-like-nav-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: #fff;
+}
+
+.you-may-also-like-nav-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #ccc;
+    border-color: #ccc;
+}
+
+.you-may-also-like-nav-btn.disabled:hover {
+    transform: none;
+    background: #ccc;
+    border-color: #ccc;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .project-detail-nav {
+        padding: 0 20px;
+        height: 60px;
+    }
+    
+    .project-nav-left {
+        gap: 20px;
+    }
+    
+    .project-nav-link {
+        font-size: 11px;
+    }
+    
+    .project-nav-name {
+        font-size: 18px;
+    }
+    
+    .project-detail-content {
+        padding: 60px 20px 80px;
+    }
+    
+    .project-detail-title {
+        font-size: 28px;
+    }
+    
+    .project-detail-description {
+        font-size: 16px;
+    }
+    
+    .project-detail-video iframe {
+        height: 400px;
+    }
+    
+    .project-detail-gallery img {
+        max-height: 600px;
+        margin-bottom: 30px;
+    }
+    
+    .you-may-also-like-section {
+        margin-top: 80px;
+        margin-bottom: 60px;
+        padding-top: 40px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .you-may-also-like-title {
+        font-size: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .you-may-also-like-item {
+        flex: 0 0 calc(50% - 10px);
+        min-width: calc(50% - 10px);
+        height: 350px;
+    }
+    
+    .you-may-also-like-carousel {
+        width: calc(100% - 120px);
+    }
+    
+    .you-may-also-like-nav-btn {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .you-may-also-like-nav-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+

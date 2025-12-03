@@ -68,6 +68,8 @@ if (isSingleTrack) {
     window.navigateToProject = navigateToProject;
     window.showHomePage = showHomePage;
     window.getProjectIdFromCard = getProjectIdFromCard;
+    window.showProjectsGridView = showProjectsGridView;
+    window.showArchivesGridView = showArchivesGridView;
     
     // 初始化单轨叙事导航栏
     function initSingleTrackNav() {
@@ -86,10 +88,10 @@ if (isSingleTrack) {
             resumeLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 // 下载简历
-                const url = 'Xuanyi.png';
+                const url = 'Xuanyi_Wang_Resume.png';
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = 'XuanyiWang_Resume.png';
+                link.download = 'Xuanyi_Wang_Resume.png';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -125,13 +127,24 @@ if (isSingleTrack) {
     function showProjectsGridView() {
         const gridView = document.getElementById('projects-grid-view');
         const homePage = document.getElementById('home-page');
+        const projectPage = document.getElementById('project-page');
+        const archivesView = document.getElementById('archives-grid-view');
         const nav = document.getElementById('single-track-nav');
         
-        if (!gridView) return;
+        if (!gridView) {
+            console.error('Projects grid view not found!');
+            return;
+        }
         
-        // 隐藏单轨叙事主页
+        // 隐藏其他视图
         if (homePage) {
             homePage.style.display = 'none';
+        }
+        if (projectPage) {
+            projectPage.style.display = 'none';
+        }
+        if (archivesView) {
+            archivesView.style.display = 'none';
         }
         
         // 确保导航栏显示
@@ -230,9 +243,13 @@ if (isSingleTrack) {
         const archivesView = document.getElementById('archives-grid-view');
         const homePage = document.getElementById('home-page');
         const projectsView = document.getElementById('projects-grid-view');
+        const projectPage = document.getElementById('project-page');
         const nav = document.getElementById('single-track-nav');
         
-        if (!archivesView) return;
+        if (!archivesView) {
+            console.error('Archives grid view not found!');
+            return;
+        }
         
         // 隐藏其他视图
         if (homePage) {
@@ -240,6 +257,9 @@ if (isSingleTrack) {
         }
         if (projectsView) {
             projectsView.style.display = 'none';
+        }
+        if (projectPage) {
+            projectPage.style.display = 'none';
         }
         
         // 确保导航栏显示
@@ -791,10 +811,10 @@ document.addEventListener('DOMContentLoaded', function() {
   if (resumeBtn) {
     resumeBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      const url = 'Xuanyi.png';
+      const url = 'Xuanyi_Wang_Resume.png';
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'XuanyiWang_Resume.png';
+      link.download = 'Xuanyi_Wang_Resume.png';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

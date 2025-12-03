@@ -2,6 +2,14 @@
 let currentRoute = 'home';
 let projectsData = null;
 
+// 允许外部设置项目数据（用于单轨叙事模式）
+if (typeof window !== 'undefined') {
+    window.setProjectsData = function(data) {
+        projectsData = data;
+        console.log('Projects data set from external source:', data.projects.length, 'projects');
+    };
+}
+
 // 初始化路由
 export function initRouter() {
     // 检查是否是单轨叙事模式
@@ -9,12 +17,27 @@ export function initRouter() {
     const isSingleTrack = homePage && homePage.classList.contains('single-track-container');
     
     if (isSingleTrack) {
-        // 单轨叙事模式：确保主页可见，不处理路由
-        console.log('Single track mode detected, skipping router initialization');
+        // 单轨叙事模式：确保主页可见，但也要加载数据用于项目详情页
+        console.log('Single track mode detected, loading data for project pages');
         // 确保主页可见
         if (homePage) {
             homePage.style.display = 'block';
         }
+        
+        // 仍然需要加载项目数据，用于项目详情页
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                projectsData = data;
+                // 检查URL中的路由（延迟一点确保DOM已加载）
+                setTimeout(() => {
+                    handleRoute();
+                }, 100);
+            })
+            .catch(err => console.error('Failed to load projects data:', err));
+        
+        // 监听URL变化
+        window.addEventListener('hashchange', handleRoute);
         return;
     }
     
@@ -79,51 +102,30 @@ export function showHomePage() {
     }
 }
 
-// 渲染项目导航列表
+// 渲染项目导航列表（项目详情页不再需要左侧导航，改为顶部导航）
 function renderProjectNav(currentProjectId) {
-    if (!projectsData) return;
-    
-    const navContainer = document.getElementById('project-nav');
-    if (!navContainer) return;
-    
-    // 清空现有内容
-    navContainer.innerHTML = '';
-    
-    // 按日期排序（最新的在前）
-    const sortedProjects = [...projectsData.projects].sort((a, b) => {
-        const dateA = a.date ? new Date(a.date) : new Date(0);
-        const dateB = b.date ? new Date(b.date) : new Date(0);
-        return dateB - dateA;
-    });
-    
-    // 创建导航项
-    sortedProjects.forEach(project => {
-        const navItem = document.createElement('a');
-        navItem.className = 'project-nav-item';
-        navItem.href = `#/project/${project.id}`;
-        navItem.textContent = project.title;
-        
-        // 高亮当前项目
-        if (project.id === currentProjectId) {
-            navItem.classList.add('active');
-        }
-        
-        // 点击事件
-        navItem.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigateToProject(project.id);
-            // 平滑滚动到顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        
-        navContainer.appendChild(navItem);
-    });
+    // 项目详情页使用顶部导航栏，不需要左侧导航
+    // 保留此函数以防其他地方调用
 }
 
 // 显示项目详情页
 export function showProjectPage(projectId) {
+    console.log('showProjectPage called with projectId:', projectId);
+    console.log('projectsData:', projectsData);
+    
+    // 如果数据还没加载，先加载
     if (!projectsData) {
-        console.error('Projects data not loaded yet');
+        console.log('Projects data not loaded, fetching...');
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                projectsData = data;
+                console.log('Projects data loaded, showing project page');
+                showProjectPage(projectId);
+            })
+            .catch(err => {
+                console.error('Failed to load projects data:', err);
+            });
         return;
     }
 
@@ -134,38 +136,171 @@ export function showProjectPage(projectId) {
         return;
     }
 
+    console.log('Found project:', project.title);
+
     currentRoute = 'project';
     const homePage = document.getElementById('home-page');
     const projectPage = document.getElementById('project-page');
+    const projectsGridView = document.getElementById('projects-grid-view');
+    const archivesGridView = document.getElementById('archives-grid-view');
     const topNavbar = document.querySelector('.top-navbar');
+    const singleTrackNav = document.getElementById('single-track-nav');
     
-    if (homePage) homePage.style.display = 'none';
-    if (projectPage) projectPage.style.display = 'flex';
-    // 隐藏顶部导航栏
+    // 隐藏其他页面
+    if (homePage) {
+        homePage.style.display = 'none';
+        console.log('Home page hidden');
+    }
+    if (projectsGridView) {
+        projectsGridView.style.display = 'none';
+    }
+    if (archivesGridView) {
+        archivesGridView.style.display = 'none';
+    }
+    
+    // 显示项目详情页 - 使用强制样式确保显示
+    if (projectPage) {
+        console.log('Setting project page styles...');
+        projectPage.style.display = 'block';
+        projectPage.style.visibility = 'visible';
+        projectPage.style.opacity = '1';
+        projectPage.style.position = 'fixed';
+        projectPage.style.top = '0';
+        projectPage.style.left = '0';
+        projectPage.style.width = '100vw';
+        projectPage.style.height = '100vh';
+        projectPage.style.zIndex = '10004';
+        projectPage.style.overflowY = 'auto';
+        projectPage.style.overflowX = 'hidden';
+        projectPage.style.background = '#fff';
+        projectPage.style.paddingTop = '80px';
+        projectPage.style.boxSizing = 'border-box';
+        console.log('Project page displayed');
+    } else {
+        console.error('Project page element not found!');
+        return;
+    }
+    
+    // 隐藏顶部导航栏，显示项目详情页导航栏
     if (topNavbar) topNavbar.style.display = 'none';
+    if (singleTrackNav) singleTrackNav.style.display = 'none';
+    
     // 去掉body的顶部padding
     document.body.style.paddingTop = '0';
+    document.body.style.overflow = 'auto';
 
-    // 渲染项目列表导航
-    renderProjectNav(projectId);
-    
     // 渲染项目详情
     renderProjectPage(project);
     
-    // 生成目录
-    generateTOC();
-    
-    // 绑定左上角名字点击事件
-    bindSidebarNameClick();
+    // 绑定导航栏点击事件
+    bindProjectDetailNav();
     
     // 滚动到顶部
-    window.scrollTo(0, 0);
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+        if (projectPage) {
+            projectPage.scrollTo(0, 0);
+        }
+    }, 100);
+}
+
+// 绑定项目详情页导航栏事件
+function bindProjectDetailNav() {
+    // PROJECTS链接
+    const projectsLink = document.getElementById('project-detail-projects-link');
+    if (projectsLink) {
+        // 移除旧的事件监听器（如果有）
+        const newProjectsLink = projectsLink.cloneNode(true);
+        projectsLink.parentNode.replaceChild(newProjectsLink, projectsLink);
+        
+        newProjectsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('PROJECTS link clicked');
+            if (window.showProjectsGridView) {
+                console.log('Calling showProjectsGridView');
+                window.showProjectsGridView();
+            } else {
+                console.error('showProjectsGridView not found on window');
+                showHomePage();
+            }
+        });
+    } else {
+        console.error('PROJECTS link not found!');
+    }
+    
+    // RESUME链接
+    const resumeLink = document.getElementById('project-detail-resume-link');
+    if (resumeLink) {
+        resumeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = 'Xuanyi_Wang_Resume.png';
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Xuanyi_Wang_Resume.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+    
+    // ARCHIVES链接
+    const archivesLink = document.getElementById('project-detail-archives-link');
+    if (archivesLink) {
+        // 移除旧的事件监听器（如果有）
+        const newArchivesLink = archivesLink.cloneNode(true);
+        archivesLink.parentNode.replaceChild(newArchivesLink, archivesLink);
+        
+        newArchivesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('ARCHIVES link clicked');
+            if (window.showArchivesGridView) {
+                console.log('Calling showArchivesGridView');
+                window.showArchivesGridView();
+            } else {
+                console.error('showArchivesGridView not found on window');
+                showHomePage();
+            }
+        });
+    } else {
+        console.error('ARCHIVES link not found!');
+    }
+    
+    // 名字链接 - 回到首页
+    const nameLink = document.getElementById('project-detail-home-link');
+    if (nameLink) {
+        nameLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showHomePage();
+        });
+    }
 }
 
 // 导航到项目页面
 export function navigateToProject(projectId) {
-    window.location.hash = `#/project/${projectId}`;
+    console.log('=== navigateToProject called with projectId:', projectId);
+    
+    // 如果数据还没加载，先加载
+    if (!projectsData) {
+        console.log('Projects data not loaded, fetching...');
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                projectsData = data;
+                console.log('Projects data loaded, showing project page');
+                showProjectPage(projectId);
+            })
+            .catch(err => {
+                console.error('Failed to load projects data:', err);
+            });
+        return;
+    }
+    
+    console.log('Calling showProjectPage directly...');
+    // 直接显示项目页面，不依赖hash
     showProjectPage(projectId);
+    
+    // 更新URL（但不阻塞）
+    window.location.hash = `#/project/${projectId}`;
 }
 
 // 渲染项目详情页面
@@ -199,25 +334,7 @@ function renderProjectPage(project) {
         }
     }
 
-    // 更新图片
-    const imgEl = document.getElementById('project-image-full');
-    if (imgEl && project.image) {
-        imgEl.src = project.image;
-        imgEl.alt = project.title;
-        imgEl.style.display = 'block';
-        // 确保图片容器可见
-        const imgContainer = imgEl.closest('.project-image-container');
-        if (imgContainer) {
-            imgContainer.style.display = 'block';
-        }
-    } else if (imgEl) {
-        // 如果没有图片，隐藏容器
-        imgEl.style.display = 'none';
-        const imgContainer = imgEl.closest('.project-image-container');
-        if (imgContainer) {
-            imgContainer.style.display = 'none';
-        }
-    }
+    // 主图不再单独显示，直接显示在画廊中
 
     // 更新描述
     const descEl = document.getElementById('project-description-section');
@@ -317,84 +434,46 @@ function renderProjectPage(project) {
         console.error('Video slot not found!');
     }
 
-    // 更新图片画廊
-    const galleryContainer = document.querySelector('#project-page .project-gallery-full');
+    // 更新图片画廊（包括主图和所有照片）
+    const galleryContainer = document.querySelector('#project-page .project-detail-gallery');
     if (galleryContainer) {
         // 清除旧内容
         galleryContainer.innerHTML = '';
         
-        // 移除旧的标题和分割线
-        const oldGalleryTitle = document.getElementById('gallery-title-full');
-        if (oldGalleryTitle) oldGalleryTitle.remove();
-        const oldGalleryDivider = document.getElementById('gallery-divider-full');
-        if (oldGalleryDivider) oldGalleryDivider.remove();
-        const oldSettingTitle = document.querySelector('#setting-gallery-full')?.previousElementSibling;
-        if (oldSettingTitle && oldSettingTitle.textContent && oldSettingTitle.textContent.includes('Setting Gallery')) {
-            const prevHr = oldSettingTitle.previousElementSibling;
-            if (prevHr && prevHr.tagName === 'HR') prevHr.remove();
-            oldSettingTitle.remove();
+        // 收集所有图片（主图 + 画廊图片 + Setting Gallery）
+        const allImages = [];
+        if (project.image) {
+            allImages.push({ src: project.image, alt: project.title });
         }
-        const oldSettingGallery = document.getElementById('setting-gallery-full');
-        if (oldSettingGallery) oldSettingGallery.remove();
-        
         if (project.gallery && project.gallery.length > 0) {
-            // 在画廊容器前插入标题（如果需要）
-            const existingTitle = document.getElementById('gallery-title-full');
-            if (!existingTitle) {
-                galleryContainer.insertAdjacentHTML('beforebegin', `<div id='gallery-title-full' style='font-weight:600;font-size:0.9rem;margin-bottom:20px;color:#666;text-transform:uppercase;letter-spacing:1px;'>Photos</div>`);
-            }
-            
-            project.gallery.forEach((img, index) => {
+            project.gallery.forEach(img => {
+                allImages.push({ src: img, alt: `${project.title} - Gallery` });
+            });
+        }
+        if (project.settingGallery && project.settingGallery.length > 0) {
+            project.settingGallery.forEach(img => {
+                allImages.push({ src: img, alt: `${project.title} - Setting Gallery` });
+            });
+        }
+        
+        if (allImages.length > 0) {
+            allImages.forEach((imgData, index) => {
                 const imgEl = document.createElement('img');
-                imgEl.src = img;
-                imgEl.alt = `${project.title} - Photo ${index + 1}`;
+                imgEl.src = imgData.src;
+                imgEl.alt = imgData.alt;
                 imgEl.loading = 'lazy';
-                imgEl.style.cursor = 'pointer';
-                imgEl.style.display = 'block';
+                imgEl.style.cssText = 'width:100%;height:auto;max-height:900px;object-fit:contain;display:block;margin-bottom:40px;cursor:pointer;background:#f5f5f5;';
                 imgEl.onclick = () => {
                     if (window.openLightbox) {
-                        const allImgs = Array.from(galleryContainer.querySelectorAll('img'));
-                        const idx = allImgs.indexOf(imgEl);
-                        window.openLightbox(allImgs, idx);
+                        const allImgElements = Array.from(galleryContainer.querySelectorAll('img'));
+                        window.openLightbox(allImgElements, index);
                     }
                 };
                 galleryContainer.appendChild(imgEl);
             });
-            // 确保画廊容器显示
-            galleryContainer.style.display = 'grid';
+            galleryContainer.style.display = 'block';
         } else {
-            // 如果没有图片，隐藏画廊容器
             galleryContainer.style.display = 'none';
-        }
-
-        // Setting Gallery
-        if (project.settingGallery && project.settingGallery.length > 0) {
-            const settingContainer = document.getElementById('setting-gallery-container-full');
-            if (settingContainer) {
-                settingContainer.innerHTML = '';
-                settingContainer.style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin:0 0 60px 0;width:100%;';
-                
-                project.settingGallery.forEach((img, index) => {
-                    const imgEl = document.createElement('img');
-                    imgEl.src = img;
-                    imgEl.alt = `Setting Gallery - Photo ${index + 1}`;
-                    imgEl.loading = 'lazy';
-                    imgEl.style.cssText = 'width:100%;height:450px;object-fit:cover;display:block;transition:transform 0.3s,filter 0.3s;cursor:pointer;background:#f5f5f5;';
-                    imgEl.onclick = () => {
-                        if (window.openLightbox) {
-                            const allImgs = Array.from(settingContainer.querySelectorAll('img'));
-                            const idx = allImgs.indexOf(imgEl);
-                            window.openLightbox(allImgs, idx);
-                        }
-                    };
-                    settingContainer.appendChild(imgEl);
-                });
-            }
-        } else {
-            const settingContainer = document.getElementById('setting-gallery-container-full');
-            if (settingContainer) {
-                settingContainer.innerHTML = '';
-            }
         }
     } else {
         console.error('Gallery container not found!');
@@ -454,6 +533,126 @@ function renderProjectPage(project) {
         
         projectLink.style.display = (project.videoLink || project.demoLink || project.link) ? 'flex' : 'none';
     }
+    
+    // 渲染"You may also like"部分
+    renderYouMayAlsoLike(project.id);
+}
+
+// 渲染"You may also like"部分
+function renderYouMayAlsoLike(currentProjectId) {
+    if (!projectsData) return;
+    
+    const carousel = document.getElementById('you-may-also-like-carousel');
+    if (!carousel) return;
+    
+    // 获取除当前项目外的其他项目
+    const otherProjects = projectsData.projects.filter(p => p.id !== currentProjectId);
+    
+    // 随机排序，显示所有项目（这样可以有多个4个一组的页面）
+    const relatedProjects = otherProjects.sort(() => Math.random() - 0.5);
+    
+    carousel.innerHTML = '';
+    
+    relatedProjects.forEach(relatedProject => {
+        const item = document.createElement('div');
+        item.className = 'you-may-also-like-item';
+        item.dataset.projectId = relatedProject.id;
+        
+        item.innerHTML = `
+            <img src="${relatedProject.image}" alt="${relatedProject.title}" loading="lazy">
+            <div class="you-may-also-like-overlay">
+                <h3 class="you-may-also-like-item-title">${relatedProject.title}</h3>
+            </div>
+        `;
+        
+        // 点击跳转到项目详情页
+        item.addEventListener('click', () => {
+            if (window.navigateToProject) {
+                window.navigateToProject(relatedProject.id);
+            }
+        });
+        
+        carousel.appendChild(item);
+    });
+    
+    // 初始化轮播导航
+    initYouMayAlsoLikeCarousel();
+}
+
+// 初始化轮播导航
+function initYouMayAlsoLikeCarousel() {
+    const carousel = document.getElementById('you-may-also-like-carousel');
+    const prevBtn = document.getElementById('you-may-also-like-prev');
+    const nextBtn = document.getElementById('you-may-also-like-next');
+    
+    if (!carousel || !prevBtn || !nextBtn) return;
+    
+    // 计算每个项目的宽度（包括gap）
+    const getItemWidth = () => {
+        const items = carousel.querySelectorAll('.you-may-also-like-item');
+        if (items.length === 0) return 0;
+        const firstItem = items[0];
+        const itemWidth = firstItem.offsetWidth;
+        const gap = 20; // 与CSS中的gap一致
+        return itemWidth + gap;
+    };
+    
+    // 每次滑动3个项目
+    const scrollAmount = () => getItemWidth() * 3;
+    
+    // 左箭头 - 向左滑动3个
+    prevBtn.addEventListener('click', () => {
+        const currentScroll = carousel.scrollLeft;
+        const amount = scrollAmount();
+        const newScroll = Math.max(0, currentScroll - amount);
+        
+        carousel.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    });
+    
+    // 右箭头 - 向右滑动3个
+    nextBtn.addEventListener('click', () => {
+        const currentScroll = carousel.scrollLeft;
+        const amount = scrollAmount();
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+        const newScroll = Math.min(maxScroll, currentScroll + amount);
+        
+        carousel.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    });
+    
+    // 更新箭头状态
+    const updateNavButtons = () => {
+        const currentScroll = carousel.scrollLeft;
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+        const threshold = 10; // 容差
+        
+        if (currentScroll <= threshold) {
+            prevBtn.classList.add('disabled');
+        } else {
+            prevBtn.classList.remove('disabled');
+        }
+        
+        if (currentScroll >= maxScroll - threshold) {
+            nextBtn.classList.add('disabled');
+        } else {
+            nextBtn.classList.remove('disabled');
+        }
+    };
+    
+    carousel.addEventListener('scroll', updateNavButtons);
+    
+    // 窗口大小改变时重新计算
+    window.addEventListener('resize', () => {
+        setTimeout(updateNavButtons, 100);
+    });
+    
+    // 初始更新
+    setTimeout(updateNavButtons, 100);
 }
 
 // 获取项目ID（从卡片元素）

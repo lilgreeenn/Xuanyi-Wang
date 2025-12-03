@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="projectDetailStyles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +27,7 @@
         <div class="navbar-left" id="home-link" style="cursor:pointer;">Xuanyi Wang</div>
         <div class="navbar-right">
             <a href="#about" class="nav-link" data-page="about">About</a>
-            <a href="Xuanyi.png" class="nav-link" id="resume-download">Resume</a>
+            <a href="Xuanyi_Wang_Resume.png" class="nav-link" id="resume-download">Resume</a>
             <a href="#projects" class="nav-link" id="projects-link">Projects</a>
         </div>
     </nav>
@@ -65,13 +66,25 @@
         <div id="home-page" class="single-track-container" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: #fff !important; z-index: 10000 !important; padding-top: 80px !important; box-sizing: border-box !important;">
             <!-- 第一屏：介绍页 -->
             <section class="story-screen intro-screen" id="intro-screen" style="display: flex !important; visibility: visible !important; opacity: 1 !important; width: 100vw !important; height: 100vh !important; position: relative !important; background: #fff !important;">
-                <div class="intro-content" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 100 !important;">
-                    <h1 class="intro-title" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #000 !important; font-size: 120px !important;">Xuanyi Wang</h1>
-                    <p class="intro-description" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #333 !important; font-size: 20px !important;">
-                        Hi everyone, I'm Xuanyi Wang. I'm a designer and creative developer, but I'm more like a questioner of the system.<br><br>
-                        I'm obsessed with challenging and reshaping our routines of interacting with the digital world. My tools are game engines (Unity), WebGL, and VR, but my true mediums are narrative and experience. I'm dedicated to reshaping the 'power of narrative,' designing new languages ​​that allow unspoken selves to be heard and understood.<br><br>
-                        When I'm not immersed in code or the virtual world, you might find me bouldering at the gym or tattooing other people (yes, I'm also a part-time tattoo artist!!).
-                    </p>
+                <div class="intro-content" id="intro-content" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 100 !important;">
+                    <div class="intro-text-wrapper" id="intro-text-wrapper">
+                        <div class="intro-text-clear">
+                            <h1 class="intro-title" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #000 !important; font-size: 120px !important;">Xuanyi Wang</h1>
+                            <p class="intro-description" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #333 !important; font-size: 20px !important;">
+                                Hi everyone, I'm Xuanyi Wang. I'm a designer and creative developer, but I'm more like a questioner of the system.<br><br>
+                                I'm obsessed with challenging and reshaping our routines of interacting with the digital world. My tools are game engines (Unity), WebGL, and VR, but my true mediums are narrative and experience. I'm dedicated to reshaping the 'power of narrative,' designing new languages ​​that allow unspoken selves to be heard and understood.<br><br>
+                                When I'm not immersed in code or the virtual world, you might find me bouldering at the gym or tattooing other people (yes, I'm also a part-time tattoo artist!!).
+                            </p>
+                        </div>
+                        <div class="intro-text-blur" id="intro-text-blur">
+                            <h1 class="intro-title" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #000 !important; font-size: 120px !important;">Xuanyi Wang</h1>
+                            <p class="intro-description" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #333 !important; font-size: 20px !important;">
+                                Hi everyone, I'm Xuanyi Wang. I'm a designer and creative developer, but I'm more like a questioner of the system.<br><br>
+                                I'm obsessed with challenging and reshaping our routines of interacting with the digital world. My tools are game engines (Unity), WebGL, and VR, but my true mediums are narrative and experience. I'm dedicated to reshaping the 'power of narrative,' designing new languages ​​that allow unspoken selves to be heard and understood.<br><br>
+                                When I'm not immersed in code or the virtual world, you might find me bouldering at the gym or tattooing other people (yes, I'm also a part-time tattoo artist!!).
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <!-- 背景3D卡片容器 -->
                 <div class="floating-cards-bg" id="floating-cards-bg"></div>
@@ -82,79 +95,83 @@
         </div>
 
         <!-- 项目详情页面 -->
-        <div id="project-page" class="page-container" style="display: none;">
-            <!-- 左侧导航栏 -->
-            <div class="project-sidebar">
-                <div class="sidebar-header">
-                    <div class="sidebar-name" id="sidebar-home-link" style="cursor: pointer;">Xuanyi Wang</div>
+        <div id="project-page" class="project-detail-page" style="display: none;">
+            <!-- 顶部导航栏 -->
+            <nav class="project-detail-nav">
+                <div class="project-nav-left">
+                    <a href="#projects" class="project-nav-link" id="project-detail-projects-link">PROJECTS</a>
+                    <a href="#resume" class="project-nav-link" id="project-detail-resume-link">RESUME</a>
+                    <a href="#archives" class="project-nav-link" id="project-detail-archives-link">ARCHIVES</a>
                 </div>
-                <nav class="project-nav" id="project-nav">
-                    <!-- 项目列表将在这里动态生成 -->
-                </nav>
-            </div>
+                <div class="project-nav-center">
+                    <a href="#home" class="project-nav-name" id="project-detail-home-link">Xuanyi Wang</a>
+                </div>
+                <div class="project-nav-right">
+                    <!-- 右侧留空 -->
+                </div>
+            </nav>
             
             <!-- 主内容区域 -->
-            <div class="project-content-full">
-                <!-- 主图 -->
-                <div class="project-hero-image" id="project-hero-section">
-                    <img id="project-image-full" src="" alt="">
-                </div>
-                
+            <div class="project-detail-content">
                 <!-- 项目标题 -->
-                <div class="project-header-minimal" id="project-title-section">
-                    <h1 id="project-title-full" class="project-title-large"></h1>
+                <div class="project-detail-title-section">
+                    <h1 id="project-title-full" class="project-detail-title"></h1>
                 </div>
                 
-                <!-- 文字内容区域 - 两列布局 -->
-                <div class="project-text-content">
-                    <div class="project-content-grid">
-                        <!-- 左列：详情信息 -->
-                        <div class="project-meta-column" id="project-meta-section">
-                            <div class="meta-item">
-                                <span class="meta-label">Tech Stack</span>
-                                <span id="project-tech-full" class="meta-value"></span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Date</span>
-                                <span id="project-date-full" class="meta-value"></span>
-                            </div>
-                            <div class="meta-item" id="project-category-meta" style="display: none;">
-                                <span class="meta-label">Category</span>
-                                <span id="project-category-full" class="meta-value"></span>
-                            </div>
-                            <div class="meta-item" id="project-tags-meta" style="display: none;">
-                                <span class="meta-label">Tags</span>
-                                <span id="project-tags-full" class="meta-value"></span>
-                            </div>
-                            
-                            <div class="project-details-list" id="project-details-list-full"></div>
-                            <div class="project-features-full"></div>
-                            <div class="team-info-full"></div>
-                            
-                            <div id="project-link-full" class="project-link"></div>
+                <!-- 项目描述 -->
+                <div class="project-detail-description-section">
+                    <div id="project-description-section" class="project-detail-description"></div>
+                </div>
+                
+                <!-- 项目详情信息 -->
+                <div class="project-detail-meta-section" id="project-meta-section">
+                    <div class="project-meta-grid">
+                        <div class="meta-item" id="project-tech-meta">
+                            <span class="meta-label">Tech Stack</span>
+                            <span id="project-tech-full" class="meta-value"></span>
                         </div>
-                        
-                        <!-- 右列：描述文字 -->
-                        <div class="project-description-column">
-                            <div id="project-description-section" class="project-description"></div>
+                        <div class="meta-item" id="project-date-meta">
+                            <span class="meta-label">Date</span>
+                            <span id="project-date-full" class="meta-value"></span>
                         </div>
+                        <div class="meta-item" id="project-category-meta" style="display: none;">
+                            <span class="meta-label">Category</span>
+                            <span id="project-category-full" class="meta-value"></span>
+                        </div>
+                        <div class="meta-item" id="project-tags-meta" style="display: none;">
+                            <span class="meta-label">Tags</span>
+                            <span id="project-tags-full" class="meta-value"></span>
+                        </div>
+                        <div class="project-details-list" id="project-details-list-full"></div>
                     </div>
                 </div>
                 
                 <!-- 视频区域 -->
-                <div id="project-video-slot-full" class="project-video-section"></div>
+                <div id="project-video-slot-full" class="project-detail-video"></div>
                 
                 <!-- 图片画廊 -->
-                <div class="project-gallery-full" id="project-gallery-section"></div>
-                <div id="setting-gallery-container-full"></div>
-            </div>
-            
-            <!-- 右侧目录 -->
-            <div class="project-toc">
-                <div class="toc-header">Contents</div>
-                <nav class="toc-nav" id="project-toc-nav">
-                    <!-- 目录项将在这里动态生成 -->
-                </nav>
+                <div class="project-detail-gallery" id="project-gallery-section"></div>
+                <div id="setting-gallery-container-full" class="project-detail-gallery"></div>
+                
+                <!-- You may also like 部分 -->
+                <div class="you-may-also-like-section">
+                    <h2 class="you-may-also-like-title">You may also like</h2>
+                    <div class="you-may-also-like-container">
+                        <button class="you-may-also-like-nav-btn prev-btn" id="you-may-also-like-prev">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="you-may-also-like-carousel" id="you-may-also-like-carousel">
+                            <!-- 相关项目将在这里动态生成 -->
+                        </div>
+                        <button class="you-may-also-like-nav-btn next-btn" id="you-may-also-like-next">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -262,7 +279,7 @@
         if (window.showHomePage) {
           window.showHomePage();
         } else {
-          window.location.reload(); // 回到作品集主页面
+        window.location.reload(); // 回到作品集主页面
         }
       });
     </script>
