@@ -79,7 +79,10 @@ export function initSingleTrack() {
             }
             
             createProjectScreens();
-            initFloatingCards();
+            // 延迟加载背景卡片，提高初始加载速度
+            setTimeout(() => {
+                initFloatingCards();
+            }, 500);
             initScrollSnap();
             initIntroBlurEffect();
         })
@@ -141,35 +144,100 @@ function createProjectScreens() {
     container.innerHTML = '';
     
     // 只显示精选项目，并按指定顺序排序
+    // 排除Dusty Memories(Comic)，因为它会与Dusty Memories并排显示
     const featuredProjects = projectsData.projects
-        .filter(project => isFeaturedProject(project.title))
+        .filter(project => {
+            const titleLower = project.title.toLowerCase();
+            // 排除Dusty Memories(Comic)，因为它会与Dusty Memories并排显示
+            if (titleLower.includes('dusty') && titleLower.includes('comic')) {
+                return false;
+            }
+            const isFeatured = isFeaturedProject(project.title);
+            if (!isFeatured) {
+                console.log('Project filtered out:', project.title);
+            }
+            return isFeatured;
+        })
         .sort((a, b) => {
             const orderA = getProjectDisplayOrder(a.title);
             const orderB = getProjectDisplayOrder(b.title);
             return orderA - orderB;
         });
     
+    console.log('Featured projects found:', featuredProjects.length);
+    console.log('Featured projects:', featuredProjects.map(p => p.title));
+    
+    if (featuredProjects.length === 0) {
+        console.error('No featured projects found! Check isFeaturedProject function.');
+        return;
+    }
+    
+    // 使用DocumentFragment批量创建DOM，提高性能
+    const fragment = document.createDocumentFragment();
+    
+    // 查找Dusty Memories(Comic)项目
+    const dustyComicProject = projectsData.projects.find(p => 
+        p.title.toLowerCase().includes('dusty') && p.title.toLowerCase().includes('comic')
+    );
+    
     featuredProjects.forEach((project, index) => {
+        const projectTitleLower = project.title.toLowerCase();
+        const isDustyMain = projectTitleLower.includes('dusty') && !projectTitleLower.includes('comic');
+        
         // 创建项目屏幕
         const screen = document.createElement('section');
         screen.className = 'story-screen project-screen';
         screen.dataset.projectId = project.id;
         screen.dataset.screenIndex = (index * 2) + 1; // 奇数索引：1, 3, 5, 7...
         
-        screen.innerHTML = `
-            <div class="project-screen-content">
-                <div class="project-card-3d" data-card-index="${index}">
-                    <img src="${project.image}" alt="${project.title}">
-                </div>
-                <div class="project-info-overlay">
-                    <h2 class="project-screen-title">${project.title}</h2>
-                    <p class="project-screen-description">${project.description ? project.description.replace(/<br\s*\/?>/gi, ' ').substring(0, 200) + '...' : ''}</p>
-                    <button class="view-details-btn" data-project-id="${project.id}">View Details →</button>
-                </div>
-            </div>
-        `;
+        // 如果是Dusty Memories主项目，添加并排布局类
+        if (isDustyMain && dustyComicProject) {
+            screen.classList.add('dual-project-screen');
+        }
         
-        container.appendChild(screen);
+        // 如果是Dusty Memories主项目，创建并排布局
+        if (isDustyMain && dustyComicProject) {
+            screen.innerHTML = `
+                <div class="project-screen-content dual-project-content">
+                    <div class="project-card-wrapper">
+                        <div class="project-card-3d" data-card-index="${index}">
+                            <img src="${project.image}" alt="${project.title}" loading="lazy" decoding="async" fetchpriority="${index === 0 ? 'high' : 'low'}">
+                        </div>
+                        <div class="project-info-overlay">
+                            <h2 class="project-screen-title">${project.title}</h2>
+                            <p class="project-screen-description">${project.description ? project.description.replace(/<br\s*\/?>/gi, ' ').substring(0, 150) + '...' : ''}</p>
+                            <button class="view-details-btn" data-project-id="${project.id}">View Details →</button>
+                        </div>
+                    </div>
+                    <div class="project-card-wrapper">
+                        <div class="project-card-3d" data-card-index="${index}-comic">
+                            <img src="${dustyComicProject.image}" alt="${dustyComicProject.title}" loading="lazy" decoding="async">
+                        </div>
+                        <div class="project-info-overlay">
+                            <h2 class="project-screen-title">${dustyComicProject.title}</h2>
+                            <p class="project-screen-description">${dustyComicProject.description ? dustyComicProject.description.replace(/<br\s*\/?>/gi, ' ').substring(0, 150) + '...' : ''}</p>
+                            <button class="view-details-btn" data-project-id="${dustyComicProject.id}">View Details →</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // 普通单项目布局
+            screen.innerHTML = `
+                <div class="project-screen-content">
+                    <div class="project-card-3d" data-card-index="${index}">
+                        <img src="${project.image}" alt="${project.title}" loading="lazy" decoding="async" fetchpriority="${index === 0 ? 'high' : 'low'}">
+                    </div>
+                    <div class="project-info-overlay">
+                        <h2 class="project-screen-title">${project.title}</h2>
+                        <p class="project-screen-description">${project.description ? project.description.replace(/<br\s*\/?>/gi, ' ').substring(0, 200) + '...' : ''}</p>
+                        <button class="view-details-btn" data-project-id="${project.id}">View Details →</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        fragment.appendChild(screen);
         
         // 在每个项目屏幕后添加媒体占位屏幕（除了最后一个项目）
         if (index < featuredProjects.length - 1) {
@@ -178,20 +246,50 @@ function createProjectScreens() {
             mediaScreen.dataset.mediaIndex = index;
             mediaScreen.dataset.screenIndex = (index * 2) + 2; // 偶数索引：2, 4, 6, 8...
             
+            // 检查项目类型，添加对应的媒体内容
+            const projectTitleLower = project.title.toLowerCase();
+            const isLayoffProject = projectTitleLower.includes('layoff');
+            const isDustyProject = projectTitleLower.includes('dusty');
+            let mediaContent = '';
+            
+            if (isDustyProject) {
+                // 为Dusty Memories项目添加图片和GIF
+                mediaContent = `
+                    <img src="dms1.png" alt="Dusty Memories 1" loading="lazy" decoding="async">
+                    <img src="dms2.gif" alt="Dusty Memories 2" loading="lazy" decoding="async">
+                    <img src="dms3.png" alt="Dusty Memories 3" loading="lazy" decoding="async">
+                    <img src="dsm5.png" alt="Dusty Memories 4" loading="lazy" decoding="async">
+                    <img src="dms6.png" alt="Dusty Memories 5" loading="lazy" decoding="async">
+                `;
+            } else if (isLayoffProject) {
+                // 为Layoff项目添加5个GIF
+                mediaContent = `
+                    <img src="lssp1.GIF" alt="Layoff GIF 1" loading="lazy" decoding="async">
+                    <img src="lssp2.GIF" alt="Layoff GIF 2" loading="lazy" decoding="async">
+                    <img src="lssp3.GIF" alt="Layoff GIF 3" loading="lazy" decoding="async">
+                    <img src="lssp4.GIF" alt="Layoff GIF 4" loading="lazy" decoding="async">
+                    <img src="lssp5.GIF" alt="Layoff GIF 5" loading="lazy" decoding="async">
+                `;
+            }
+            
             mediaScreen.innerHTML = `
                 <div class="media-placeholder-content" data-placeholder-index="${index}">
-                    <!-- 占位位置：可以在这里添加图片或视频 -->
-                    <!-- 示例：<img src="your-image.jpg" alt="Media"> -->
-                    <!-- 示例：<video src="your-video.mp4" controls></video> -->
-                    <!-- 示例：<iframe src="your-video-url" frameborder="0" allowfullscreen></iframe> -->
+                    ${mediaContent}
                 </div>
             `;
             
-            container.appendChild(mediaScreen);
+            fragment.appendChild(mediaScreen);
         }
     });
     
+    // 一次性添加到容器，减少重排
+    container.appendChild(fragment);
+    
     console.log(`Created ${featuredProjects.length} featured project screens`);
+    console.log('Screen indices:', Array.from(fragment.querySelectorAll('.project-screen')).map(s => ({
+        title: s.dataset.projectId ? projectsData.projects.find(p => p.id == s.dataset.projectId)?.title : 'unknown',
+        screenIndex: s.dataset.screenIndex
+    })));
     
     // 绑定查看详情按钮
     container.querySelectorAll('.view-details-btn').forEach(btn => {
@@ -203,10 +301,29 @@ function createProjectScreens() {
         });
     });
     
-    // 初始化卡片位置
-    setTimeout(() => {
-        initCardPositions();
-    }, 100);
+    // 如果是Dusty Memories并排布局，也绑定Comic项目的按钮
+    if (dustyComicProject) {
+        container.querySelectorAll(`.view-details-btn[data-project-id="${dustyComicProject.id}"]`).forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const projectId = parseInt(e.target.dataset.projectId);
+                if (window.navigateToProject) {
+                    window.navigateToProject(projectId);
+                }
+            });
+        });
+    }
+    
+    // 初始化卡片位置 - 立即执行，不延迟
+    initCardPositions();
+    
+    // 初始化后立即显示第一个屏幕的卡片
+    requestAnimationFrame(() => {
+        const firstScreen = container.querySelector('.project-screen[data-screen-index="1"]');
+        if (firstScreen) {
+            const firstScreenIndex = parseInt(firstScreen.dataset.screenIndex);
+            animateCardTransition(firstScreenIndex);
+        }
+    });
 }
 
 // 初始化背景漂浮卡片
@@ -214,11 +331,26 @@ function initFloatingCards() {
     const bgContainer = document.getElementById('floating-cards-bg');
     if (!bgContainer || !projectsData) return;
     
-    // 使用所有项目照片创建背景
+    // 限制背景卡片数量以提高性能（最多20个）
     const allProjects = projectsData.projects;
+    const maxCards = 20;
+    const selectedProjects = allProjects.length > maxCards 
+        ? allProjects.sort(() => Math.random() - 0.5).slice(0, maxCards)
+        : allProjects;
+    
+    // 创建共享的keyframes（只创建一次）
+    if (!document.getElementById('dynamic-card-styles')) {
+        const styleSheet = document.createElement('style');
+        styleSheet.id = 'dynamic-card-styles';
+        document.head.appendChild(styleSheet);
+    }
+    const styleSheet = document.getElementById('dynamic-card-styles');
+    
+    // 使用DocumentFragment批量创建，提高性能
+    const fragment = document.createDocumentFragment();
     
     // 创建所有项目照片，随机位置、大小、重叠，缓慢淡入
-    allProjects.forEach((project, index) => {
+    selectedProjects.forEach((project, index) => {
         const card = document.createElement('div');
         card.className = 'floating-card';
         card.dataset.cardIndex = index;
@@ -227,9 +359,11 @@ function initFloatingCards() {
         img.src = project.image;
         img.alt = project.title;
         img.loading = 'lazy';
+        img.decoding = 'async';
+        img.fetchpriority = 'low'; // 降低优先级
         card.appendChild(img);
         
-        bgContainer.appendChild(card);
+        fragment.appendChild(card);
         
         // 随机位置（允许重叠和超出边界）
         const startX = Math.random() * 140 - 20; // -20% 到 120%
@@ -257,26 +391,9 @@ function initFloatingCards() {
         const stayEndPercent = ((fadeInDuration + stayDuration) / totalDuration) * 100;
         const fadeOutEndPercent = ((fadeInDuration + stayDuration + fadeOutDuration) / totalDuration) * 100;
         
-        // 创建自定义keyframes（使用内联样式和动态keyframes）
-        const animationName = `fadeInOutCard-${index}`;
-        const keyframes = `
-            @keyframes ${animationName} {
-                0% { opacity: 0; }
-                ${fadeInPercent}% { opacity: ${finalOpacity}; }
-                ${stayEndPercent}% { opacity: ${finalOpacity}; }
-                ${fadeOutEndPercent}% { opacity: 0; }
-                100% { opacity: 0; }
-            }
-        `;
-        
-        // 添加动态样式
-        if (!document.getElementById('dynamic-card-styles')) {
-            const styleSheet = document.createElement('style');
-            styleSheet.id = 'dynamic-card-styles';
-            document.head.appendChild(styleSheet);
-        }
-        const styleSheet = document.getElementById('dynamic-card-styles');
-        styleSheet.textContent += keyframes;
+        // 使用共享的keyframes动画（优化性能）
+        // 使用CSS变量来控制每个卡片的透明度
+        card.style.setProperty('--final-opacity', finalOpacity);
         
         // 设置初始样式
         card.style.left = `${startX}%`;
@@ -287,10 +404,13 @@ function initFloatingCards() {
         card.style.opacity = '0'; // 初始透明
         card.style.animationDelay = `${delay}s`;
         card.style.animationDuration = `${totalDuration}s`;
-        card.style.animationName = animationName;
+        card.style.animationName = 'fadeInOutCard'; // 使用共享动画
         card.style.animationIterationCount = 'infinite';
         card.style.animationTimingFunction = 'ease-in-out';
     });
+    
+    // 一次性添加到容器，减少重排
+    bgContainer.appendChild(fragment);
     
     floatingCards = Array.from(bgContainer.querySelectorAll('.floating-card'));
 }
@@ -378,45 +498,48 @@ function initIntroBlurEffect() {
     updateBlur();
 }
 
-// 初始化滚动snap
+// 初始化滚动snap - 使用 Intersection Observer 优化性能
 function initScrollSnap() {
     const container = document.getElementById('home-page');
     if (!container) return;
     
-    // 使用节流优化滚动性能
-    let lastScrollTop = 0;
-    let ticking = false;
+    // 使用 Intersection Observer 替代滚动事件，性能更好
+    const observerOptions = {
+        root: container,
+        rootMargin: '0px',
+        threshold: [0.3, 0.5, 0.7] // 当屏幕可见30%、50%、70%时触发
+    };
     
-    function handleScroll() {
-        if (ticking) return;
-        
-        requestAnimationFrame(() => {
-            const scrollTop = container.scrollTop;
-            const screenHeight = window.innerHeight;
-            const currentScreen = Math.floor(scrollTop / screenHeight + 0.5);
-            
-            if (currentScreen !== currentScreenIndex) {
-                currentScreenIndex = currentScreen;
-                animateCardTransition(currentScreen);
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+                const screen = entry.target;
+                const screenIndex = parseInt(screen.dataset.screenIndex);
+                if (screenIndex && screenIndex !== currentScreenIndex) {
+                    currentScreenIndex = screenIndex;
+                    // 使用 requestAnimationFrame 确保在下一帧执行
+                    requestAnimationFrame(() => {
+                        animateCardTransition(screenIndex);
+                    });
+                }
             }
-            
-            ticking = false;
         });
-        
-        ticking = true;
-    }
+    }, observerOptions);
     
-    // 监听滚动，使用passive提高性能
-    container.addEventListener('scroll', handleScroll, { passive: true });
+    // 观察所有项目屏幕
+    const projectScreens = container.querySelectorAll('.project-screen');
+    projectScreens.forEach(screen => {
+        observer.observe(screen);
+    });
     
     // 初始触发一次
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         const scrollTop = container.scrollTop;
         const screenHeight = window.innerHeight;
         const currentScreen = Math.floor(scrollTop / screenHeight + 0.5);
         currentScreenIndex = currentScreen;
         animateCardTransition(currentScreen);
-    }, 100);
+    });
 }
 
 // 卡片转场动画
@@ -456,60 +579,104 @@ function animateCardTransition(screenIndex) {
     const currentScreen = document.querySelector(`.project-screen[data-screen-index="${screenIndex}"]`);
     if (!currentScreen) return;
     
-    const card = currentScreen.querySelector('.project-card-3d');
-    if (!card) return;
+    // 检查是否是并排布局
+    const isDualScreen = currentScreen.classList.contains('dual-project-screen');
+    const cards = currentScreen.querySelectorAll('.project-card-3d');
     
-    const cardIndex = parseInt(card.dataset.cardIndex);
+    let currentCards = [];
     
-    // 卡片飞到中央的动画
-    card.style.transition = 'opacity 0.6s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-    card.style.transform = 'translate(0, 0) scale(1.2) rotateY(0deg) rotateX(0deg)';
-    card.style.opacity = '1';
-    card.style.zIndex = '1000';
-    
-    // 延迟添加鼠标移动3D效果，等待动画完成
-    setTimeout(() => {
-        addCard3DEffect(card);
-    }, 800);
-    
-    // 显示项目信息 - 与卡片同时出现
-    const infoOverlay = currentScreen.querySelector('.project-info-overlay');
-    if (infoOverlay) {
-        // 移除延迟，让信息与卡片同时出现
-        infoOverlay.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        infoOverlay.style.opacity = '1';
-        infoOverlay.style.transform = 'translateY(0)';
+    if (isDualScreen && cards.length === 2) {
+        // 并排布局：同时显示两个卡片
+        cards.forEach((card, idx) => {
+            card.style.willChange = 'transform, opacity';
+            card.style.transition = 'opacity 0.4s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transform = 'translate(0, 0) scale(1) rotateY(0deg) rotateX(0deg)';
+            card.style.opacity = '1';
+            card.style.zIndex = '1000';
+            
+            // 延迟添加鼠标移动3D效果
+            setTimeout(() => {
+                addCard3DEffect(card);
+            }, 500);
+        });
+        
+        currentCards = Array.from(cards);
+        
+        // 显示两个项目信息
+        const infoOverlays = currentScreen.querySelectorAll('.project-info-overlay');
+        infoOverlays.forEach(overlay => {
+            overlay.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            overlay.style.opacity = '1';
+            overlay.style.transform = 'translateY(0)';
+        });
+    } else {
+        // 单卡片布局
+        const card = cards[0];
+        if (!card) return;
+        
+        currentCards = [card];
+        
+        // 立即显示，不等待动画
+        card.style.willChange = 'transform, opacity';
+        card.style.transition = 'opacity 0.4s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        card.style.transform = 'translate(0, 0) scale(1.2) rotateY(0deg) rotateX(0deg)';
+        card.style.opacity = '1';
+        card.style.zIndex = '1000';
+        
+        // 延迟添加鼠标移动3D效果，等待动画完成
+        setTimeout(() => {
+            addCard3DEffect(card);
+        }, 500);
+        
+        // 显示项目信息 - 与卡片同时出现
+        const infoOverlay = currentScreen.querySelector('.project-info-overlay');
+        if (infoOverlay) {
+            infoOverlay.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            infoOverlay.style.opacity = '1';
+            infoOverlay.style.transform = 'translateY(0)';
+        }
     }
     
-    // 处理其他屏幕的卡片
-    document.querySelectorAll('.project-card-3d').forEach((otherCard) => {
-        if (otherCard !== card) {
-            const otherScreen = otherCard.closest('.project-screen');
-            if (!otherScreen) return;
-            
-            const otherScreenIndex = parseInt(otherScreen.dataset.screenIndex);
-            const offset = otherScreenIndex - screenIndex;
-            
-            otherCard.style.transition = 'opacity 0.6s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-            otherCard.style.opacity = '0.2';
-            otherCard.style.transform = `translate(${offset * 200}px, ${offset * 100}px) scale(0.6) rotateY(${offset * 45}deg) rotateX(0deg)`;
-            otherCard.style.zIndex = '100';
-            
-            // 移除其他卡片的3D效果
-            if (otherCard._mouseMoveHandler) {
-                otherCard.removeEventListener('mousemove', otherCard._mouseMoveHandler);
-                otherCard.removeEventListener('mouseleave', otherCard._mouseLeaveHandler);
-                otherCard._mouseMoveHandler = null;
-                otherCard._mouseLeaveHandler = null;
+    // 处理其他屏幕的卡片 - 使用缓存的卡片列表优化性能
+    if (!window.allProjectCards) {
+        window.allProjectCards = Array.from(document.querySelectorAll('.project-card-3d'));
+    }
+    
+    // 批量处理，减少重排
+    requestAnimationFrame(() => {
+        window.allProjectCards.forEach((otherCard) => {
+            if (!currentCards.includes(otherCard)) {
+                const otherScreen = otherCard.closest('.project-screen');
+                if (!otherScreen) return;
+                
+                const otherScreenIndex = parseInt(otherScreen.dataset.screenIndex);
+                if (isNaN(otherScreenIndex)) return;
+                
+                const offset = otherScreenIndex - screenIndex;
+                
+                // 使用 transform 和 opacity，避免触发 layout
+                otherCard.style.willChange = 'transform, opacity';
+                otherCard.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                otherCard.style.opacity = '0.2';
+                otherCard.style.transform = `translate(${offset * 200}px, ${offset * 100}px) scale(0.6) rotateY(${offset * 45}deg) rotateX(0deg)`;
+                otherCard.style.zIndex = '100';
+                
+                // 移除其他卡片的3D效果
+                if (otherCard._mouseMoveHandler) {
+                    otherCard.removeEventListener('mousemove', otherCard._mouseMoveHandler);
+                    otherCard.removeEventListener('mouseleave', otherCard._mouseLeaveHandler);
+                    otherCard._mouseMoveHandler = null;
+                    otherCard._mouseLeaveHandler = null;
+                }
+                
+                // 隐藏其他屏幕的信息
+                const otherOverlays = otherScreen.querySelectorAll('.project-info-overlay');
+                otherOverlays.forEach(overlay => {
+                    overlay.style.opacity = '0';
+                    overlay.style.transform = 'translateY(30px)';
+                });
             }
-            
-            // 隐藏其他屏幕的信息
-            const otherOverlay = otherScreen.querySelector('.project-info-overlay');
-            if (otherOverlay) {
-                otherOverlay.style.opacity = '0';
-                otherOverlay.style.transform = 'translateY(30px)';
-            }
-        }
+        });
     });
 }
 
@@ -519,29 +686,55 @@ function initCardPositions() {
         const screen = card.closest('.project-screen');
         if (!screen) return;
         
+        const isDualScreen = screen.classList.contains('dual-project-screen');
         const screenIndex = parseInt(screen.dataset.screenIndex);
         const offset = screenIndex;
         
-        // 初始位置：卡片分散在屏幕外
-        card.style.cssText = `
-            position: absolute;
-            width: 600px;
-            height: 400px;
-            transform: translate(${offset * 200}px, ${offset * 100}px) scale(0.6) rotateY(${offset * 45}deg) rotateX(0deg);
-            opacity: 0.3;
-            transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-            cursor: pointer;
-            will-change: transform;
-        `;
-        
-        // 初始隐藏信息
-        const infoOverlay = screen.querySelector('.project-info-overlay');
-        if (infoOverlay) {
-            infoOverlay.style.opacity = '0';
-            infoOverlay.style.transform = 'translateY(30px)';
-            infoOverlay.style.transition = 'all 0.8s ease-out';
+        if (isDualScreen) {
+            // 并排布局：使用相对定位，不分散
+            card.style.cssText = `
+                position: relative;
+                width: 100%;
+                max-width: 500px;
+                height: 400px;
+                transform: scale(0.9) rotateY(0deg) rotateX(0deg);
+                opacity: 0.3;
+                transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                transform-style: preserve-3d;
+                cursor: pointer;
+                will-change: transform;
+            `;
+        } else {
+            // 单卡片布局：初始位置分散在屏幕外
+            // 计算相对于第一个项目屏幕的偏移（screenIndex 1 是第一个项目）
+            const relativeOffset = screenIndex - 1;
+            card.style.cssText = `
+                position: absolute;
+                width: 600px;
+                height: 400px;
+                transform: translate(${relativeOffset * 200}px, ${relativeOffset * 100}px) scale(0.6) rotateY(${relativeOffset * 45}deg) rotateX(0deg);
+                opacity: 0.3;
+                transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                transform-style: preserve-3d;
+                cursor: pointer;
+                will-change: transform;
+            `;
         }
+        
+        // 初始隐藏信息（但并排布局的信息始终显示）
+        const infoOverlays = screen.querySelectorAll('.project-info-overlay');
+        infoOverlays.forEach(overlay => {
+            if (isDualScreen) {
+                // 并排布局：信息始终显示，不隐藏
+                overlay.style.opacity = '1';
+                overlay.style.transform = 'none';
+            } else {
+                // 单卡片布局：初始隐藏
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'translateY(30px)';
+                overlay.style.transition = 'all 0.8s ease-out';
+            }
+        });
     });
 }
 

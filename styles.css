@@ -3062,20 +3062,35 @@ body.single-track-mode {
     align-items: center;
     justify-content: center;
     position: relative;
+    gap: 30px;
+    flex-wrap: nowrap;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .media-placeholder-content img,
 .media-placeholder-content video,
 .media-placeholder-content iframe {
-    max-width: 90vw;
-    max-height: 90vh;
-    width: auto;
-    height: auto;
+    width: calc(12vw - 15px);
+    max-width: calc(12vw - 15px);
+    height: 35vh;
+    max-height: 35vh;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
 .media-placeholder-content img {
     display: block;
+}
+
+/* 如果只有一个图片，保持居中并可以更大 */
+.media-placeholder-content img:only-child {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
 }
 
 .media-placeholder-content video {
@@ -3097,6 +3112,30 @@ body.single-track-mode {
     perspective: 2000px;
 }
 
+/* 并排显示两个项目卡片 */
+.dual-project-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    height: 100%;
+    padding: 0 60px;
+    box-sizing: border-box;
+}
+
+.project-card-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 45%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    perspective: 2000px;
+}
+
 /* 3D项目卡片 */
 .project-card-3d {
     position: absolute;
@@ -3106,6 +3145,14 @@ body.single-track-mode {
     cursor: pointer;
     transition: transform 0.1s ease-out; /* 快速响应鼠标移动 */
     will-change: transform; /* 优化性能 */
+}
+
+/* 并排布局中的卡片 */
+.dual-project-content .project-card-3d {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 400px;
 }
 
 .project-card-3d img {
@@ -3131,6 +3178,25 @@ body.single-track-mode {
     transition: all 0.8s ease-out;
 }
 
+/* 并排布局中的卡片和信息 */
+.project-card-wrapper .project-card-3d {
+    position: relative;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.project-card-wrapper .project-info-overlay {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    max-width: 100%;
+    padding: 30px 20px 0 20px;
+    margin-top: 0;
+    text-align: center;
+    opacity: 1;
+}
+
 .project-screen-title {
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: clamp(32px, 6vw, 64px);
@@ -3139,19 +3205,6 @@ body.single-track-mode {
     margin: 0 0 24px 0;
     color: #000;
     line-height: 1.2;
-    text-shadow: 
-        -1px -1px 0 #fff,
-        1px -1px 0 #fff,
-        -1px 1px 0 #fff,
-        1px 1px 0 #fff,
-        -2px -2px 0 #fff,
-        2px -2px 0 #fff,
-        -2px 2px 0 #fff,
-        2px 2px 0 #fff,
-        -3px -3px 0 #fff,
-        3px -3px 0 #fff,
-        -3px 3px 0 #fff,
-        3px 3px 0 #fff;
 }
 
 .project-screen-description {
@@ -3161,15 +3214,6 @@ body.single-track-mode {
     color: #666;
     margin: 0 0 40px 0;
     font-weight: 300;
-    text-shadow: 
-        -1px -1px 0 #fff,
-        1px -1px 0 #fff,
-        -1px 1px 0 #fff,
-        1px 1px 0 #fff,
-        -2px -2px 0 #fff,
-        2px -2px 0 #fff,
-        -2px 2px 0 #fff,
-        2px 2px 0 #fff;
 }
 
 /* 查看详情按钮 */
