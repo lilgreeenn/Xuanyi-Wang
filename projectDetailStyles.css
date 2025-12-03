@@ -92,9 +92,9 @@ body:has(#project-page:not([style*="display: none"])) {
 
 /* 项目详情内容区域 */
 .project-detail-content {
-    max-width: 900px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 80px 60px 120px;
+    padding: 80px 0 120px 0;
     box-sizing: border-box;
     background: #000 !important;
 }
@@ -113,6 +113,10 @@ body:has(#project-page:not([style*="display: none"])) {
 .project-detail-title-section {
     text-align: center;
     margin-bottom: 40px;
+    padding: 0 60px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .project-detail-title {
@@ -129,6 +133,10 @@ body:has(#project-page:not([style*="display: none"])) {
 .project-detail-description-section {
     text-align: center;
     margin-bottom: 60px;
+    padding: 0 60px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .project-detail-description {
@@ -153,6 +161,10 @@ body:has(#project-page:not([style*="display: none"])) {
 .project-detail-meta-section {
     text-align: center;
     margin-bottom: 80px;
+    padding: 0 60px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .project-meta-grid {
@@ -191,36 +203,50 @@ body:has(#project-page:not([style*="display: none"])) {
 
 /* 视频区域 */
 .project-detail-video {
-    width: 100%;
-    margin-bottom: 80px;
+    width: 100vw;
+    max-width: 100vw;
+    margin-bottom: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
     text-align: center;
+    padding: 0;
 }
 
 .project-detail-video iframe {
-    width: 100%;
-    max-width: 100%;
-    height: 600px;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    min-height: 80vh;
     border: none;
     display: block;
-    margin: 0 auto;
+    margin: 0;
 }
 
 /* 图片画廊 */
 .project-detail-gallery {
-    width: 100%;
-    margin-bottom: 40px;
+    width: 100vw;
+    max-width: 100vw;
+    margin-bottom: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 0;
 }
 
 .project-detail-gallery img {
-    width: 100%;
+    width: 100vw;
+    max-width: 100vw;
     height: auto;
-    max-height: 900px;
+    min-height: 80vh;
+    max-height: 100vh;
     object-fit: contain;
     display: block;
-    margin-bottom: 40px;
+    margin-bottom: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
     cursor: pointer;
-    background: #1a1a1a;
+    background: #000;
     transition: opacity 0.3s ease;
+    box-sizing: border-box;
 }
 
 .project-detail-gallery img:hover {
@@ -289,7 +315,7 @@ body:has(#project-page:not([style*="display: none"])) {
     height: 500px;
     overflow: hidden;
     cursor: pointer;
-    background: #1a1a1a;
+    background: #000;
     border-radius: 4px;
     transition: transform 0.3s ease, opacity 0.3s ease;
 }

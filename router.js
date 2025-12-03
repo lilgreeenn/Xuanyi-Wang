@@ -463,7 +463,7 @@ function renderProjectPage(project) {
                 imgEl.src = imgData.src;
                 imgEl.alt = imgData.alt;
                 imgEl.loading = 'lazy';
-                imgEl.style.cssText = 'width:100%;height:auto;max-height:900px;object-fit:contain;display:block;margin-bottom:40px;cursor:pointer;background:#f5f5f5;';
+                imgEl.style.cssText = 'width:100%;height:auto;max-height:900px;object-fit:contain;display:block;margin-bottom:40px;cursor:pointer;background:#000;';
                 imgEl.onclick = () => {
                     if (window.openLightbox) {
                         const allImgElements = Array.from(galleryContainer.querySelectorAll('img'));
