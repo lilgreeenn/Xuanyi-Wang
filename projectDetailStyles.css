@@ -9,11 +9,16 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #fff;
+    background: #000 !important;
     z-index: 10004;
     overflow-y: auto;
     overflow-x: hidden;
     padding-top: 80px;
+}
+
+/* 确保body在项目详情页时也是黑色 */
+body:has(#project-page:not([style*="display: none"])) {
+    background: #000 !important;
 }
 
 /* 项目详情页导航栏 */
@@ -27,9 +32,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 60px;
-    background: #fff;
+    background: #000;
     z-index: 10005;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
 }
 
@@ -59,7 +64,7 @@
     font-size: 13px;
     font-weight: 400;
     letter-spacing: 0.05em;
-    color: #666;
+    color: #999;
     text-decoration: none;
     text-transform: uppercase;
     transition: color 0.3s ease;
@@ -67,7 +72,7 @@
 }
 
 .project-nav-link:hover {
-    color: #000;
+    color: #fff;
 }
 
 .project-nav-name {
@@ -75,7 +80,7 @@
     font-size: 24px;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: #000;
+    color: #fff;
     text-decoration: none;
     cursor: pointer;
     transition: opacity 0.3s ease;
@@ -91,6 +96,7 @@
     margin: 0 auto;
     padding: 80px 60px 120px;
     box-sizing: border-box;
+    background: #000 !important;
 }
 
 /* You may also like 部分使用全屏宽度 */
@@ -114,7 +120,7 @@
     font-size: clamp(32px, 5vw, 48px);
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: #000;
+    color: #fff;
     margin: 0;
     line-height: 1.2;
 }
@@ -129,7 +135,7 @@
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     line-height: 1.8;
-    color: #333;
+    color: #ccc;
     font-weight: 300;
     max-width: 700px;
     margin: 0 auto;
@@ -170,7 +176,7 @@
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 11px;
     font-weight: 500;
-    color: #666;
+    color: #999;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -178,7 +184,7 @@
 .project-detail-meta-section .meta-value {
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
-    color: #000;
+    color: #fff;
     line-height: 1.5;
     font-weight: 400;
 }
@@ -213,7 +219,7 @@
     display: block;
     margin-bottom: 40px;
     cursor: pointer;
-    background: #f5f5f5;
+    background: #1a1a1a;
     transition: opacity 0.3s ease;
 }
 
@@ -230,7 +236,7 @@
     margin-top: 120px;
     margin-bottom: 80px;
     padding-top: 60px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     width: 100vw;
     max-width: 100vw;
     margin-left: calc(-50vw + 50%);
@@ -244,7 +250,7 @@
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
     font-weight: 500;
-    color: #000;
+    color: #fff;
     text-align: center;
     margin: 0 0 40px 0;
     letter-spacing: -0.01em;
@@ -283,7 +289,7 @@
     height: 500px;
     overflow: hidden;
     cursor: pointer;
-    background: #f5f5f5;
+    background: #1a1a1a;
     border-radius: 4px;
     transition: transform 0.3s ease, opacity 0.3s ease;
 }

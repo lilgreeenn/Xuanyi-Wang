@@ -103,10 +103,34 @@ const featuredProjectTitles = [
     'young wild and free'
 ];
 
+// 定义项目显示顺序（按用户要求的顺序）
+const projectDisplayOrder = [
+    'dusty memories',
+    'city quest',
+    'cityquest',
+    'layoff',
+    'layoffs',
+    'kberkill',
+    'shadow ball',
+    'shadow play',
+    'young wild and free'
+];
+
 // 检查项目是否应该显示在首页
 function isFeaturedProject(projectTitle) {
     const titleLower = projectTitle.toLowerCase();
     return featuredProjectTitles.some(featured => titleLower.includes(featured));
+}
+
+// 获取项目的显示顺序
+function getProjectDisplayOrder(projectTitle) {
+    const titleLower = projectTitle.toLowerCase();
+    for (let i = 0; i < projectDisplayOrder.length; i++) {
+        if (titleLower.includes(projectDisplayOrder[i])) {
+            return i;
+        }
+    }
+    return 999; // 未匹配的项目排在最后
 }
 
 // 创建项目展示屏
@@ -116,10 +140,14 @@ function createProjectScreens() {
     
     container.innerHTML = '';
     
-    // 只显示精选项目
-    const featuredProjects = projectsData.projects.filter(project => 
-        isFeaturedProject(project.title)
-    );
+    // 只显示精选项目，并按指定顺序排序
+    const featuredProjects = projectsData.projects
+        .filter(project => isFeaturedProject(project.title))
+        .sort((a, b) => {
+            const orderA = getProjectDisplayOrder(a.title);
+            const orderB = getProjectDisplayOrder(b.title);
+            return orderA - orderB;
+        });
     
     featuredProjects.forEach((project, index) => {
         const screen = document.createElement('section');

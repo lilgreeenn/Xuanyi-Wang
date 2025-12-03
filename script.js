@@ -193,9 +193,31 @@ if (isSingleTrack) {
         'young wild and free'
     ];
     
+    // 定义项目显示顺序
+    const projectDisplayOrder = [
+        'dusty memories',
+        'city quest',
+        'cityquest',
+        'layoff',
+        'layoffs',
+        'kberkill',
+        'shadow ball',
+        'shadow play'
+    ];
+    
     function isFeaturedProject(projectTitle) {
         const titleLower = projectTitle.toLowerCase();
         return featuredProjectTitles.some(featured => titleLower.includes(featured));
+    }
+    
+    function getProjectDisplayOrder(projectTitle) {
+        const titleLower = projectTitle.toLowerCase();
+        for (let i = 0; i < projectDisplayOrder.length; i++) {
+            if (titleLower.includes(projectDisplayOrder[i])) {
+                return i;
+            }
+        }
+        return 999;
     }
     
     // 加载项目到网格（只显示精选项目）
@@ -208,10 +230,14 @@ if (isSingleTrack) {
             .then(data => {
                 grid.innerHTML = '';
                 
-                // 只显示精选项目
-                const featuredProjects = data.projects.filter(project => 
-                    isFeaturedProject(project.title)
-                );
+                // 只显示精选项目，并按指定顺序排序
+                const featuredProjects = data.projects
+                    .filter(project => isFeaturedProject(project.title))
+                    .sort((a, b) => {
+                        const orderA = getProjectDisplayOrder(a.title);
+                        const orderB = getProjectDisplayOrder(b.title);
+                        return orderA - orderB;
+                    });
                 
                 featuredProjects.forEach(project => {
                     const gridItem = document.createElement('div');

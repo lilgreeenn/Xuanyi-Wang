@@ -172,7 +172,7 @@ export function showProjectPage(projectId) {
         projectPage.style.zIndex = '10004';
         projectPage.style.overflowY = 'auto';
         projectPage.style.overflowX = 'hidden';
-        projectPage.style.background = '#fff';
+        projectPage.style.background = '#000';
         projectPage.style.paddingTop = '80px';
         projectPage.style.boxSizing = 'border-box';
         console.log('Project page displayed');
@@ -185,9 +185,10 @@ export function showProjectPage(projectId) {
     if (topNavbar) topNavbar.style.display = 'none';
     if (singleTrackNav) singleTrackNav.style.display = 'none';
     
-    // 去掉body的顶部padding
+    // 去掉body的顶部padding，设置黑色背景
     document.body.style.paddingTop = '0';
     document.body.style.overflow = 'auto';
+    document.body.style.background = '#000';
 
     // 渲染项目详情
     renderProjectPage(project);
