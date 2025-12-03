@@ -94,9 +94,10 @@ body:has(#project-page:not([style*="display: none"])) {
 .project-detail-content {
     max-width: 100%;
     margin: 0 auto;
-    padding: 80px 0 120px 0;
+    padding: 0;
     box-sizing: border-box;
     background: #000 !important;
+    overflow-x: hidden;
 }
 
 /* You may also like 部分使用全屏宽度 */
@@ -112,7 +113,7 @@ body:has(#project-page:not([style*="display: none"])) {
 /* 项目标题区域 */
 .project-detail-title-section {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
     padding: 0 60px;
     max-width: 900px;
     margin-left: auto;
@@ -132,7 +133,7 @@ body:has(#project-page:not([style*="display: none"])) {
 /* 项目描述区域 */
 .project-detail-description-section {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 80px;
     padding: 0 60px;
     max-width: 900px;
     margin-left: auto;
@@ -160,7 +161,7 @@ body:has(#project-page:not([style*="display: none"])) {
 /* 项目详情信息区域 */
 .project-detail-meta-section {
     text-align: center;
-    margin-bottom: 80px;
+    margin-bottom: 100px;
     padding: 0 60px;
     max-width: 900px;
     margin-left: auto;
@@ -201,22 +202,40 @@ body:has(#project-page:not([style*="display: none"])) {
     font-weight: 400;
 }
 
-/* 视频区域 */
-.project-detail-video {
-    width: 100vw;
-    max-width: 100vw;
-    margin-bottom: 0;
-    margin-left: calc(-50vw + 50%);
-    margin-right: calc(-50vw + 50%);
-    text-align: center;
-    padding: 0;
+/* 视频区域 - 默认完全隐藏 */
+#project-video-slot-full {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    max-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* 只有当有视频内容时才显示 */
+#project-video-slot-full.has-video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 80px 0 !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    text-align: center !important;
+    padding: 0 !important;
+    overflow: visible !important;
 }
 
 .project-detail-video iframe {
     width: 100vw;
     max-width: 100vw;
-    height: 100vh;
-    min-height: 80vh;
+    height: 80vh;
+    max-height: 80vh;
     border: none;
     display: block;
     margin: 0;
@@ -233,20 +252,20 @@ body:has(#project-page:not([style*="display: none"])) {
 }
 
 .project-detail-gallery img {
-    width: 100vw;
-    max-width: 100vw;
-    height: auto;
-    min-height: 80vh;
-    max-height: 100vh;
-    object-fit: contain;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: auto !important;
+    max-height: 80vh !important;
+    object-fit: contain !important;
     display: block;
-    margin-bottom: 0;
-    margin-left: calc(-50vw + 50%);
-    margin-right: calc(-50vw + 50%);
+    margin: 80px 0 !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
     cursor: pointer;
-    background: #000;
+    background: #000 !important;
     transition: opacity 0.3s ease;
     box-sizing: border-box;
+    padding: 0;
 }
 
 .project-detail-gallery img:hover {
@@ -315,7 +334,7 @@ body:has(#project-page:not([style*="display: none"])) {
     height: 500px;
     overflow: hidden;
     cursor: pointer;
-    background: #000;
+    background: #1a1a1a;
     border-radius: 4px;
     transition: transform 0.3s ease, opacity 0.3s ease;
 }

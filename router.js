@@ -388,48 +388,85 @@ function renderProjectPage(project) {
     // 更新视频/演示
     const videoSlot = document.getElementById('project-video-slot-full');
     if (videoSlot) {
+        // 先清空并重置视频区域
         videoSlot.innerHTML = '';
-        videoSlot.style.display = 'block';
-        videoSlot.style.marginBottom = '60px';
-        videoSlot.id = 'project-video-section'; // 确保有ID用于目录跳转
+        videoSlot.className = 'project-detail-video'; // 重置类名，使用CSS默认隐藏
+        videoSlot.id = 'project-video-slot-full'; // 确保ID正确
+        
+        let hasVideo = false;
+        
+        // 检查是否有有效的视频链接（必须是非空字符串且有效）
+        const hasValidVideoLink = project.videoLink && 
+            typeof project.videoLink === 'string' && 
+            project.videoLink.trim() !== '' && 
+            (project.videoLink.includes('bilibili.com') || 
+             project.videoLink.includes('vimeo.com') || 
+             project.videoLink.includes('youtube.com') || 
+             project.videoLink.includes('youtu.be'));
+        
+        const hasValidDemoLink = project.demoLink && 
+            typeof project.demoLink === 'string' && 
+            project.demoLink.trim() !== '' && 
+            project.demoLink.includes('editor.p5js.org') && 
+            project.demoLink.includes('/full/');
         
         // P5.js作品（优先显示）
-        if (project.demoLink && project.demoLink.includes('editor.p5js.org') && project.demoLink.includes('/full/')) {
-            videoSlot.innerHTML = `<div style='width:100%;display:flex;justify-content:center;overflow-x:auto;margin-bottom:60px;'><iframe src="${project.demoLink}" width="100%" height="600" frameborder="0" allowfullscreen style="border-radius:0;max-width:100%;min-width:320px;display:block;margin:auto;"></iframe></div>`;
+        if (hasValidDemoLink) {
+            videoSlot.innerHTML = `<div style='width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;overflow-x:auto;'><iframe src="${project.demoLink.trim()}" width="100vw" height="80vh" max-height="80vh" frameborder="0" allowfullscreen style="border-radius:0;max-width:100vw;min-width:320px;display:block;margin:auto;"></iframe></div>`;
+            hasVideo = true;
         }
         // Bilibili视频
-        else if (project.videoLink && project.videoLink.includes('bilibili.com')) {
+        else if (hasValidVideoLink && project.videoLink.includes('bilibili.com')) {
             // Bilibili视频需要提取BV号
             const bvMatch = project.videoLink.match(/BV[\w]+/);
             if (bvMatch) {
                 const bvId = bvMatch[0];
-                videoSlot.innerHTML = `<div style="width:100%;display:flex;justify-content:center;margin-bottom:60px;"><iframe src="https://player.bilibili.com/player.html?bvid=${bvId}&page=1" width="100%" height="600" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" style="border-radius:0;max-width:100%;display:block;margin:auto;"></iframe></div>`;
+                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe src="https://player.bilibili.com/player.html?bvid=${bvId}&page=1" width="100vw" height="80vh" max-height="80vh" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
+                hasVideo = true;
             }
         }
         // Vimeo视频
-        else if (project.videoLink && project.videoLink.includes('vimeo.com')) {
+        else if (hasValidVideoLink && project.videoLink.includes('vimeo.com')) {
             const match = project.videoLink.match(/vimeo\.com\/(\d+)/);
             const vimeoId = match ? match[1] : null;
             if (vimeoId) {
-                videoSlot.innerHTML = `<div style="width:100%;display:flex;justify-content:center;margin-bottom:60px;"><iframe src="https://player.vimeo.com/video/${vimeoId}" width="100%" height="600" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="border-radius:0;max-width:100%;display:block;margin:auto;"></iframe></div>`;
+                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe src="https://player.vimeo.com/video/${vimeoId}" width="100vw" height="80vh" max-height="80vh" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
+                hasVideo = true;
             }
         }
         // YouTube视频
-        else if (project.videoLink && (project.videoLink.includes('youtube.com') || project.videoLink.includes('youtu.be'))) {
+        else if (hasValidVideoLink && (project.videoLink.includes('youtube.com') || project.videoLink.includes('youtu.be'))) {
             let youtubeId = '';
-            if (project.videoLink.includes('youtube.com')) {
-                const url = new URL(project.videoLink);
-                youtubeId = url.searchParams.get('v');
-            } else {
-                const match = project.videoLink.match(/youtu\.be\/([\w-]+)/);
-                youtubeId = match ? match[1] : '';
+            try {
+                if (project.videoLink.includes('youtube.com')) {
+                    const url = new URL(project.videoLink);
+                    youtubeId = url.searchParams.get('v');
+                } else {
+                    const match = project.videoLink.match(/youtu\.be\/([\w-]+)/);
+                    youtubeId = match ? match[1] : '';
+                }
+                if (youtubeId && youtubeId.trim() !== '') {
+                    videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe width="100vw" height="80vh" max-height="80vh" src="https://www.youtube.com/embed/${youtubeId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
+                    hasVideo = true;
+                }
+            } catch (e) {
+                console.error('Invalid YouTube URL:', project.videoLink);
             }
-            if (youtubeId) {
-                videoSlot.innerHTML = `<div style="width:100%;display:flex;justify-content:center;margin-bottom:60px;"><iframe width="100%" height="600" src="https://www.youtube.com/embed/${youtubeId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" style="border-radius:0;max-width:100%;display:block;margin:auto;"></iframe></div>`;
-            }
+        }
+        
+        // 只有在有视频时才显示视频区域 - 使用CSS类控制
+        if (hasVideo) {
+            videoSlot.className = 'project-detail-video has-video';
+            videoSlot.id = 'project-video-section';
         } else {
-            // 如果没有视频，隐藏视频槽
-            videoSlot.style.display = 'none';
+            // 确保没有视频时完全隐藏 - 移除has-video类，使用CSS默认隐藏
+            videoSlot.className = 'project-detail-video';
+            videoSlot.id = 'project-video-slot-full';
+            videoSlot.innerHTML = '';
+            // 移除所有子元素
+            while (videoSlot.firstChild) {
+                videoSlot.removeChild(videoSlot.firstChild);
+            }
         }
     } else {
         console.error('Video slot not found!');
@@ -463,7 +500,7 @@ function renderProjectPage(project) {
                 imgEl.src = imgData.src;
                 imgEl.alt = imgData.alt;
                 imgEl.loading = 'lazy';
-                imgEl.style.cssText = 'width:100%;height:auto;max-height:900px;object-fit:contain;display:block;margin-bottom:40px;cursor:pointer;background:#000;';
+                imgEl.style.cssText = 'width:100vw;max-width:100vw;height:auto;min-height:100vh;object-fit:contain;display:block;margin:0;cursor:pointer;background:#000;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);';
                 imgEl.onclick = () => {
                     if (window.openLightbox) {
                         const allImgElements = Array.from(galleryContainer.querySelectorAll('img'));
