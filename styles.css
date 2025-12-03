@@ -3095,6 +3095,19 @@ body.single-track-mode {
     margin: 0 0 24px 0;
     color: #000;
     line-height: 1.2;
+    text-shadow: 
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        1px 1px 0 #fff,
+        -2px -2px 0 #fff,
+        2px -2px 0 #fff,
+        -2px 2px 0 #fff,
+        2px 2px 0 #fff,
+        -3px -3px 0 #fff,
+        3px -3px 0 #fff,
+        -3px 3px 0 #fff,
+        3px 3px 0 #fff;
 }
 
 .project-screen-description {
@@ -3104,6 +3117,15 @@ body.single-track-mode {
     color: #666;
     margin: 0 0 40px 0;
     font-weight: 300;
+    text-shadow: 
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        1px 1px 0 #fff,
+        -2px -2px 0 #fff,
+        2px -2px 0 #fff,
+        -2px 2px 0 #fff,
+        2px 2px 0 #fff;
 }
 
 /* 查看详情按钮 */

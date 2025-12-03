@@ -16,9 +16,18 @@
     padding-top: 80px;
 }
 
-/* 确保body在项目详情页时也是黑色 */
+/* 归档项目（ARCHIVES）- 白色背景 */
+.project-detail-page.archives-project {
+    background: #fff !important;
+}
+
+/* 确保body在项目详情页时也是黑色（精选项目）或白色（归档项目） */
 body:has(#project-page:not([style*="display: none"])) {
     background: #000 !important;
+}
+
+body:has(#project-page.archives-project:not([style*="display: none"])) {
+    background: #fff !important;
 }
 
 /* 项目详情页导航栏 */
@@ -36,6 +45,12 @@ body:has(#project-page:not([style*="display: none"])) {
     z-index: 10005;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
+}
+
+/* 归档项目的导航栏 - 白色背景 */
+.project-detail-page.archives-project .project-detail-nav {
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .project-nav-left {
@@ -75,6 +90,15 @@ body:has(#project-page:not([style*="display: none"])) {
     color: #fff;
 }
 
+/* 归档项目的导航链接 */
+.project-detail-page.archives-project .project-nav-link {
+    color: #666;
+}
+
+.project-detail-page.archives-project .project-nav-link:hover {
+    color: #000;
+}
+
 .project-nav-name {
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 24px;
@@ -84,6 +108,11 @@ body:has(#project-page:not([style*="display: none"])) {
     text-decoration: none;
     cursor: pointer;
     transition: opacity 0.3s ease;
+}
+
+/* 归档项目的导航名字 */
+.project-detail-page.archives-project .project-nav-name {
+    color: #000;
 }
 
 .project-nav-name:hover {
@@ -98,6 +127,14 @@ body:has(#project-page:not([style*="display: none"])) {
     box-sizing: border-box;
     background: #000 !important;
     overflow-x: hidden;
+}
+
+/* 归档项目的内容区域 - 白色背景 */
+.project-detail-page.archives-project .project-detail-content {
+    background: #fff !important;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
 }
 
 /* You may also like 部分使用全屏宽度 */
@@ -130,6 +167,11 @@ body:has(#project-page:not([style*="display: none"])) {
     line-height: 1.2;
 }
 
+/* 归档项目的标题 - 黑色文字 */
+.project-detail-page.archives-project .project-detail-title {
+    color: #000;
+}
+
 /* 项目描述区域 */
 .project-detail-description-section {
     text-align: center;
@@ -140,6 +182,12 @@ body:has(#project-page:not([style*="display: none"])) {
     margin-right: auto;
 }
 
+/* 归档项目的描述区域 */
+.project-detail-page.archives-project .project-detail-description-section {
+    max-width: 1200px;
+    padding: 0;
+}
+
 .project-detail-description {
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
@@ -148,6 +196,11 @@ body:has(#project-page:not([style*="display: none"])) {
     font-weight: 300;
     max-width: 700px;
     margin: 0 auto;
+}
+
+/* 归档项目的描述 - 深灰色文字 */
+.project-detail-page.archives-project .project-detail-description {
+    color: #333;
 }
 
 .project-detail-description p {
@@ -168,6 +221,12 @@ body:has(#project-page:not([style*="display: none"])) {
     margin-right: auto;
 }
 
+/* 归档项目的详情信息区域 */
+.project-detail-page.archives-project .project-detail-meta-section {
+    max-width: 1200px;
+    padding: 0;
+}
+
 .project-meta-grid {
     display: inline-flex;
     flex-direction: column;
@@ -185,6 +244,28 @@ body:has(#project-page:not([style*="display: none"])) {
     border: none;
 }
 
+/* 项目详情列表（包含Team等信息） */
+.project-details-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 0;
+    width: 100%;
+}
+
+.project-details-list .meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    width: 100%;
+    text-align: center;
+}
+
 .project-detail-meta-section .meta-label {
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 11px;
@@ -194,12 +275,22 @@ body:has(#project-page:not([style*="display: none"])) {
     letter-spacing: 0.05em;
 }
 
+/* 归档项目的meta标签 */
+.project-detail-page.archives-project .project-detail-meta-section .meta-label {
+    color: #666;
+}
+
 .project-detail-meta-section .meta-value {
     font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 14px;
     color: #fff;
     line-height: 1.5;
     font-weight: 400;
+}
+
+/* 归档项目的meta值 */
+.project-detail-page.archives-project .project-detail-meta-section .meta-value {
+    color: #000;
 }
 
 /* 视频区域 */
@@ -211,6 +302,23 @@ body:has(#project-page:not([style*="display: none"])) {
     margin-right: calc(-50vw + 50%);
     text-align: center;
     padding: 0;
+}
+
+/* 归档项目的视频区域 - 限制宽度 */
+.project-detail-page.archives-project .project-detail-video {
+    width: 100%;
+    max-width: 1200px;
+    margin: 80px auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 60px;
+    box-sizing: border-box;
+}
+
+.project-detail-page.archives-project .project-detail-video iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 8px;
 }
 
 .project-detail-video iframe {
@@ -250,6 +358,47 @@ body:has(#project-page:not([style*="display: none"])) {
     padding: 0;
 }
 
+/* 归档项目的图片背景 - 白色 */
+.project-detail-page.archives-project .project-detail-gallery img {
+    background: #fff !important;
+}
+
+/* 归档项目的画廊 - 网格布局 */
+.project-detail-page.archives-project .project-detail-gallery {
+    width: 100%;
+    max-width: 1200px;
+    margin: 80px auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 60px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    box-sizing: border-box;
+}
+
+.project-detail-page.archives-project .project-detail-gallery img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    display: block;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    cursor: pointer;
+    background: #f5f5f5 !important;
+    border-radius: 4px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-detail-page.archives-project .project-detail-gallery img:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
 .project-detail-gallery img:hover {
     opacity: 0.9;
 }
@@ -271,6 +420,13 @@ body:has(#project-page:not([style*="display: none"])) {
     padding-left: 60px;
     padding-right: 60px;
     box-sizing: border-box;
+    background: #000;
+}
+
+/* 归档项目的 You may also like 部分 */
+.project-detail-page.archives-project .you-may-also-like-section {
+    background: #fff;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .you-may-also-like-title {
@@ -281,6 +437,11 @@ body:has(#project-page:not([style*="display: none"])) {
     text-align: center;
     margin: 0 0 40px 0;
     letter-spacing: -0.01em;
+}
+
+/* 归档项目的标题 */
+.project-detail-page.archives-project .you-may-also-like-title {
+    color: #000;
 }
 
 .you-may-also-like-container {
@@ -367,6 +528,17 @@ body:has(#project-page:not([style*="display: none"])) {
     border-radius: 50%;
     border: 2px solid #000;
     background: #000;
+}
+
+/* 归档项目的导航按钮 */
+.project-detail-page.archives-project .you-may-also-like-nav-btn {
+    border: 2px solid #333;
+    background: #fff;
+}
+
+.project-detail-page.archives-project .you-may-also-like-nav-btn svg {
+    stroke: #000;
+}
     color: #fff;
     display: flex;
     align-items: center;
@@ -479,6 +651,13 @@ body:has(#project-page:not([style*="display: none"])) {
     .you-may-also-like-nav-btn svg {
         width: 20px;
         height: 20px;
+    }
+    
+    /* 归档项目在移动端的画廊布局 */
+    .project-detail-page.archives-project .project-detail-gallery {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 0 20px;
     }
 }
 

@@ -108,6 +108,21 @@ function renderProjectNav(currentProjectId) {
     // 保留此函数以防其他地方调用
 }
 
+// 判断项目是否属于精选项目（PROJECTS）
+function isFeaturedProject(projectTitle) {
+    const featuredProjectTitles = [
+        'shadow ball',
+        'shadow play',
+        'kberkill',
+        'cityquest',
+        'layoff',
+        'dusty',
+        'young wild and free'
+    ];
+    const titleLower = projectTitle.toLowerCase();
+    return featuredProjectTitles.some(featured => titleLower.includes(featured));
+}
+
 // 显示项目详情页
 export function showProjectPage(projectId) {
     console.log('showProjectPage called with projectId:', projectId);
@@ -137,6 +152,10 @@ export function showProjectPage(projectId) {
     }
 
     console.log('Found project:', project.title);
+    
+    // 判断项目是否属于精选项目
+    const isFeatured = isFeaturedProject(project.title);
+    console.log('Is featured project:', isFeatured);
 
     currentRoute = 'project';
     const homePage = document.getElementById('home-page');
@@ -172,10 +191,16 @@ export function showProjectPage(projectId) {
         projectPage.style.zIndex = '10004';
         projectPage.style.overflowY = 'auto';
         projectPage.style.overflowX = 'hidden';
-        projectPage.style.background = '#000';
+        
+        // 根据项目类型设置背景色：精选项目（PROJECTS）= 黑色，归档项目（ARCHIVES）= 白色
+        const backgroundColor = isFeatured ? '#000' : '#fff';
+        projectPage.style.background = backgroundColor;
+        projectPage.classList.toggle('archives-project', !isFeatured);
+        projectPage.classList.toggle('projects-project', isFeatured);
+        
         projectPage.style.paddingTop = '80px';
         projectPage.style.boxSizing = 'border-box';
-        console.log('Project page displayed');
+        console.log('Project page displayed with background:', backgroundColor);
     } else {
         console.error('Project page element not found!');
         return;
@@ -185,13 +210,14 @@ export function showProjectPage(projectId) {
     if (topNavbar) topNavbar.style.display = 'none';
     if (singleTrackNav) singleTrackNav.style.display = 'none';
     
-    // 去掉body的顶部padding，设置黑色背景
+    // 根据项目类型设置body背景色
+    const backgroundColor = isFeatured ? '#000' : '#fff';
     document.body.style.paddingTop = '0';
     document.body.style.overflow = 'auto';
-    document.body.style.background = '#000';
+    document.body.style.background = backgroundColor;
 
-    // 渲染项目详情
-    renderProjectPage(project);
+    // 渲染项目详情（传递项目类型信息）
+    renderProjectPage(project, isFeatured);
     
     // 绑定导航栏点击事件
     bindProjectDetailNav();
@@ -305,7 +331,7 @@ export function navigateToProject(projectId) {
 }
 
 // 渲染项目详情页面
-function renderProjectPage(project) {
+function renderProjectPage(project, isFeatured = true) {
     // 更新标题
     const titleEl = document.getElementById('project-title-full');
     if (titleEl) titleEl.textContent = project.title;
@@ -519,12 +545,24 @@ function renderProjectPage(project) {
         }
         
         if (allImages.length > 0) {
+            // 检查是否是归档项目
+            const isArchivesProject = document.getElementById('project-page')?.classList.contains('archives-project');
+            
             allImages.forEach((imgData, index) => {
                 const imgEl = document.createElement('img');
                 imgEl.src = imgData.src;
                 imgEl.alt = imgData.alt;
                 imgEl.loading = 'lazy';
-                imgEl.style.cssText = 'width:100vw;max-width:100vw;height:auto;min-height:100vh;object-fit:contain;display:block;margin:0;cursor:pointer;background:#000;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);';
+                
+                // 归档项目使用网格布局样式，精选项目使用全屏样式
+                if (isArchivesProject) {
+                    // 归档项目：正常网格布局，不需要内联样式，由CSS控制
+                    imgEl.style.cssText = '';
+                } else {
+                    // 精选项目：全屏样式
+                    imgEl.style.cssText = 'width:100vw;max-width:100vw;height:auto;min-height:100vh;object-fit:contain;display:block;margin:0;cursor:pointer;background:#000;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);';
+                }
+                
                 imgEl.onclick = () => {
                     if (window.openLightbox) {
                         const allImgElements = Array.from(galleryContainer.querySelectorAll('img'));

@@ -445,13 +445,13 @@ function animateCardTransition(screenIndex) {
         addCard3DEffect(card);
     }, 800);
     
-    // 显示项目信息
+    // 显示项目信息 - 与卡片同时出现
     const infoOverlay = currentScreen.querySelector('.project-info-overlay');
     if (infoOverlay) {
-        setTimeout(() => {
-            infoOverlay.style.opacity = '1';
-            infoOverlay.style.transform = 'translateY(0)';
-        }, 600);
+        // 移除延迟，让信息与卡片同时出现
+        infoOverlay.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        infoOverlay.style.opacity = '1';
+        infoOverlay.style.transform = 'translateY(0)';
     }
     
     // 处理其他屏幕的卡片
