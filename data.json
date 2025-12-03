@@ -2,12 +2,13 @@
     "projects": [
         {
             "id": 1,
-            "title": "KberKill(Demo)",
+            "title": "KberKill",
             "category": ["Game", "VR+AI"],
             "tags": ["VR(Apple Vision Pro)", "Demo", "Game"],
                 "description": "One day, you become a killer... <br> <br> This is a demo of a VR interactive game where players can walk around the room wearing a VR device, reason out the assassination target, kill the target with the right items, and unlock different endings.",
             
             "tech": "Unity, Xcode, Blender",
+            "Status": "Ongoing",
             "date": "May 2025",
             "team": {
                 "size": "5 people",
@@ -44,6 +45,7 @@
 
 
             "tech": "Unity",
+            "Status": "Completed",
             "date": "May 2025",
             "team": {
                 "size": "2 people",
@@ -74,6 +76,7 @@
             "description": "A website that allows users to create their own music, and record the memory of the live music.",
           
             "tech": "javascript",
+            "Status": "Completed",
             "date": "October 2024",
           
             "demoLink": "https://lilgreeenn.github.io/MusikaJ/index.html",
@@ -97,6 +100,7 @@
             "tags": ["APP", "Xcode", "NFC"],
            "description": "It is a tapping sticker that will have a pop-up that will earn the station's icon on the user's phone (NFC tag).  <br> <br> Then, users can get the station icon on their phone and explore more stickers to tap, searching around the city.  <br> <br> NFC tap to unlock each subway icon.",
            "tech": "Xcode, NFC",
+           "Status": "Completed",
             "date": "February 2025",
             "team": {
                 "size": "3 people",
@@ -137,6 +141,7 @@
             "tags": ["Animation","Interactive video","VR(Apple Vision Pro)"],
             "description": "Layoff! And Survive! <br> <br>  This is an interactive 2d animation. The setting is a world where layoffs are a real survival game, where different choices determine the outcome of the character you play (the worker), and if you're lucky you don't get laid off.  <br> <br> PS. if super lucky you can watch other people playing the survival game in a movie theater (VR scene)",
             "tech": "2D Animation", 
+            "Status": "Completed",
             "date": "May 2024",
             "videoLink": "https://www.bilibili.com/video/BV1DZ421x7iW/?spm_id_from=333.999.0.0",
             "image": "1400.png",
@@ -174,36 +179,35 @@
  
         {
             "id": 6,
-            "title": "Dusty Memories (first)",
+            "title": "Dusty Memories",
             "category": ["Website+APP", "Animation", "VR+AI"],
             "tags": ["Animation","Website","VR(Apple Vision Pro)"],
             "description": "In a futuristic world where the memories of dead humans are turned into dangerous “memory dust...",
             "tech": "2D Animation, VR, Website", 
+            "Status": "Completed",
             "date": "December 2024",
             "demoLink":"https://lilgreeenn.github.io/202412/",
             "videoLink": "https://www.youtube.com/watch?v=Pj9aV0__WJo",
             "image": "18000.png",
             "gallery": [
-                
-                "11112.png",
-                "11111.png",
-                "11113.png",
-                "11114.png",
-                "11115.png",
-                "11116.png"
+                "dmm-1.jpg",
+                "dmm-2.jpg",
+                "dmm-3.jpg",
+                "dmm-4.jpg"
             ]
         },
         {
             "id": 7,
-            "title": "Music Diary📓(Demo)",
+            "title": "Music Diary📓",
             "category": "Website+APP",
             "tags": ["APP", "Xcode", "API"],
            "description": "When you have music that you like to listen to, you can record the mood at the same time.",
            "tech": "Xcode",
+            "Status": "Ongoing",
             "date": "March 2025",
             
          
-            "image": "25000.png",
+            "image": "musicdiary.png",
             "gallery": [
                 "2500.PNG",
                 "2501.PNG"
@@ -217,6 +221,7 @@
             "tags": ["Game,P5.js"],
             "description": "A PRG mini-game about collecting items, synthesizing different items, and finding memories through mouse touches!",
             "tech": "P5.js, Blender ", 
+            "Status": "Completed",
             "date": "December 2023",
                  "demoLink": "https://editor.p5js.org/wangx078/full/ggxC3KZkW",
             "image": "1601.png",
@@ -246,6 +251,7 @@
             "tags": ["AR, AI"],
             "description": "<h2><strong>Welcome to the Museum of Astrocaria!</strong></h2>\n\n<blockquote>Here, you will explore the glorious history of our nation and experience exciting moments from the <em>Dawn of Unity</em> to the <em>The Radiant Leader</em>. Each gallery vividly illustrates the prosperity of society and the wise leadership of the government. Thank you for sharing the proud culture of the <strong>Astrocaria</strong> and the remarkable stories of this great land.</blockquote>",
             "tech": "AR, AI ", 
+            "Status": "Completed",
             "date": "December 2023",
                  "demoLink": "https://newart.city/show/astrocaria",
             "image": "2700.png",
@@ -269,11 +275,12 @@
         },
         {
             "id": 10,
-            "title": "Dusty Memories",
+            "title": "Dusty Memories(Comic)",
             "category": "Illustrations+Comic",
             "tags": ["Comic"],
          "description": "In a futuristic world where the memories of dead humans are turned into dangerous “memory dust,” Alica, a young girl raised in a segregated community of janitors, is responsible for recycling the dust to maintain social order. However, she has a secret - she secretly absorbs memories and experiences forbidden moments.",
             "tech": "Comic",
+            "Status": "Ongoing",
             "date": "October 2024",
             "link": "https://drive.google.com/file/d/1lnvFNaVhuJOKEi6Tla3dqlv0U1OVznpb/view?usp=drive_link",
             "image": "1010.png",
@@ -303,6 +310,7 @@
             "tags": ["2D Animation"],
             "description": "Running Life",
             "tech": "2D Animation", 
+            "Status": "Ongoing",
             "date": "May 2024",
             "videoLink":  "https://vimeo.com/1086490938?share=copy",
             "image": "1500.png",
@@ -324,6 +332,7 @@
             "tags": ["Comic"],
             "description": "2008 China shamate Love story.（DEMO）",
             "tech": "Comic", 
+            "Status": "Ongoing",
             "date": "November 2024",
             "image": "1101.PNG",
             "gallery": [
@@ -363,6 +372,7 @@
             "tags": ["Game,P5.js"],
             "description": "Hand Painted is a browser-based, hand-tracking sketch pad built with p5.js + ml5.js Handpose. Turn your webcam on and your index-finger becomes a brush—no mouse or stylus needed.",
             "tech": "P5.js, ml5.js", 
+            "Status": "Completed",
             "date": "December 2023",
                  "demoLink": "https://editor.p5js.org/wangx078/full/UKv3KlRYB",
             "image": "2200.png",
@@ -386,6 +396,7 @@
             "description": "NPCs,but in reality",
            
             "tech": "air pump",
+            "Status": "Completed",
             "date": "October 2023",
             "link": "https://docs.google.com/presentation/d/11ZJzm3Bc2oZ_NtaMEWC43mx1F-GB4C-2lYUuD-ikChw/edit?usp=sharing",
             "image": "1.png",
@@ -403,6 +414,7 @@
             "description": "Pulse sensor and LED light to output a different color based on the user's heart rate",
            
             "tech": "LEDs",
+            "Status": "Completed",
             "date": "October 2023",
             "image": "4.png",
             "gallery": [
@@ -421,6 +433,7 @@
             "tags": ["Beads", "Fashion"],
            
             "tech": "Beads",
+            "Status": "Completed",
             "date": "May 2023",
             "image": "510.png",
             "gallery": [
@@ -438,6 +451,7 @@
             "tags": ["Upcycle", "Fashion"],
            
             "tech": "Upcycle",
+            "Status": "Completed",
             "date": "February 2023",
             "image": "610.png",
             "gallery": [
@@ -456,6 +470,7 @@
             "tags": ["Upcycle", "Fashion"],
            
             "tech": "fashion",
+            "Status": "Completed",
             "date": "May 2024",
             "image": "710.png",
             "gallery": [
@@ -476,6 +491,7 @@
             "tags": ["Fashion", "Machine Knitting"],
           
             "tech": "Machine Knitting",
+            "Status": "Completed",
             "date": "December 2024",
             "image": "810.JPG",
             "gallery": [
@@ -493,6 +509,7 @@
             "tags": ["Fashion", "Machine Knitting"],
            
             "tech": "Fashion",
+            "Status": "Completed",
             "date": "May 2023",
             "image": "910.png",
             "gallery": [
@@ -509,6 +526,7 @@
             "tags": ["Illustrations"],
            
             "tech": "Procreate",
+            "Status": "Completed",
             "date": "September 2024",
             "image": "2300.png"
            
