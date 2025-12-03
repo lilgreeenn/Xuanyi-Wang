@@ -3043,6 +3043,50 @@ body.single-track-mode {
     z-index: 2;
 }
 
+/* 媒体占位屏幕 */
+.media-placeholder-screen {
+    background: #000 !important;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50vh !important;
+    min-height: 50vh !important;
+    width: 100vw;
+}
+
+.media-placeholder-content {
+    width: 100vw;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.media-placeholder-content img,
+.media-placeholder-content video,
+.media-placeholder-content iframe {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.media-placeholder-content img {
+    display: block;
+}
+
+.media-placeholder-content video {
+    display: block;
+}
+
+.media-placeholder-content iframe {
+    border: none;
+    display: block;
+}
+
 .project-screen-content {
     position: relative;
     width: 100%;

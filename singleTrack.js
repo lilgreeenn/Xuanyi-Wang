@@ -150,10 +150,11 @@ function createProjectScreens() {
         });
     
     featuredProjects.forEach((project, index) => {
+        // 创建项目屏幕
         const screen = document.createElement('section');
         screen.className = 'story-screen project-screen';
         screen.dataset.projectId = project.id;
-        screen.dataset.screenIndex = index + 1;
+        screen.dataset.screenIndex = (index * 2) + 1; // 奇数索引：1, 3, 5, 7...
         
         screen.innerHTML = `
             <div class="project-screen-content">
@@ -169,6 +170,25 @@ function createProjectScreens() {
         `;
         
         container.appendChild(screen);
+        
+        // 在每个项目屏幕后添加媒体占位屏幕（除了最后一个项目）
+        if (index < featuredProjects.length - 1) {
+            const mediaScreen = document.createElement('section');
+            mediaScreen.className = 'story-screen media-placeholder-screen';
+            mediaScreen.dataset.mediaIndex = index;
+            mediaScreen.dataset.screenIndex = (index * 2) + 2; // 偶数索引：2, 4, 6, 8...
+            
+            mediaScreen.innerHTML = `
+                <div class="media-placeholder-content" data-placeholder-index="${index}">
+                    <!-- 占位位置：可以在这里添加图片或视频 -->
+                    <!-- 示例：<img src="your-image.jpg" alt="Media"> -->
+                    <!-- 示例：<video src="your-video.mp4" controls></video> -->
+                    <!-- 示例：<iframe src="your-video-url" frameborder="0" allowfullscreen></iframe> -->
+                </div>
+            `;
+            
+            container.appendChild(mediaScreen);
+        }
     });
     
     console.log(`Created ${featuredProjects.length} featured project screens`);
@@ -424,6 +444,13 @@ function animateCardTransition(screenIndex) {
     floatingCards.forEach(card => {
         card.style.opacity = '0.1';
     });
+    
+    // 检查是否是媒体占位屏幕
+    const mediaScreen = document.querySelector(`.media-placeholder-screen[data-screen-index="${screenIndex}"]`);
+    if (mediaScreen) {
+        // 这是媒体占位屏幕，不需要处理卡片动画
+        return;
+    }
     
     // 获取当前屏幕的项目卡片
     const currentScreen = document.querySelector(`.project-screen[data-screen-index="${screenIndex}"]`);
