@@ -386,87 +386,111 @@ function renderProjectPage(project) {
     }
 
     // 更新视频/演示
-    const videoSlot = document.getElementById('project-video-slot-full');
+    let videoSlot = document.getElementById('project-video-slot-full');
+    
+    // 如果找不到，尝试等待一下再找
+    if (!videoSlot) {
+        console.warn('Video slot not found immediately, retrying...');
+        // 尝试从项目页面容器内查找
+        const projectPage = document.getElementById('project-page');
+        if (projectPage) {
+            videoSlot = projectPage.querySelector('#project-video-slot-full');
+        }
+    }
+    
     if (videoSlot) {
-        // 先清空并重置视频区域
+        // 先完全清空并隐藏视频区域 - 移除所有子元素
+        while (videoSlot.firstChild) {
+            videoSlot.removeChild(videoSlot.firstChild);
+        }
         videoSlot.innerHTML = '';
-        videoSlot.className = 'project-detail-video'; // 重置类名，使用CSS默认隐藏
-        videoSlot.id = 'project-video-slot-full'; // 确保ID正确
+        videoSlot.style.display = 'none';
+        // 保持原始ID，同时添加用于目录跳转的ID
+        if (videoSlot.id !== 'project-video-slot-full') {
+            videoSlot.id = 'project-video-slot-full';
+        }
+        // 添加用于目录跳转的类或数据属性
+        videoSlot.setAttribute('data-section-id', 'project-video-section');
         
         let hasVideo = false;
+        let videoSrc = '';
         
-        // 检查是否有有效的视频链接（必须是非空字符串且有效）
-        const hasValidVideoLink = project.videoLink && 
-            typeof project.videoLink === 'string' && 
-            project.videoLink.trim() !== '' && 
-            (project.videoLink.includes('bilibili.com') || 
-             project.videoLink.includes('vimeo.com') || 
-             project.videoLink.includes('youtube.com') || 
-             project.videoLink.includes('youtu.be'));
-        
-        const hasValidDemoLink = project.demoLink && 
-            typeof project.demoLink === 'string' && 
-            project.demoLink.trim() !== '' && 
-            project.demoLink.includes('editor.p5js.org') && 
-            project.demoLink.includes('/full/');
+        console.log('Rendering video for project:', project.title);
+        console.log('demoLink:', project.demoLink);
+        console.log('videoLink:', project.videoLink);
         
         // P5.js作品（优先显示）
-        if (hasValidDemoLink) {
-            videoSlot.innerHTML = `<div style='width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;overflow-x:auto;'><iframe src="${project.demoLink.trim()}" width="100vw" height="80vh" max-height="80vh" frameborder="0" allowfullscreen style="border-radius:0;max-width:100vw;min-width:320px;display:block;margin:auto;"></iframe></div>`;
+        if (project.demoLink && project.demoLink.includes('editor.p5js.org') && project.demoLink.includes('/full/')) {
+            videoSrc = project.demoLink;
+            console.log('Using P5.js demoLink:', videoSrc);
+            videoSlot.innerHTML = `<div style='width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;overflow-x:auto;'><iframe src="${videoSrc}" width="100vw" height="80vh" max-height="80vh" frameborder="0" allowfullscreen style="border-radius:0;max-width:100vw;min-width:320px;display:block;margin:auto;"></iframe></div>`;
             hasVideo = true;
         }
         // Bilibili视频
-        else if (hasValidVideoLink && project.videoLink.includes('bilibili.com')) {
+        else if (project.videoLink && project.videoLink.includes('bilibili.com')) {
             // Bilibili视频需要提取BV号
             const bvMatch = project.videoLink.match(/BV[\w]+/);
             if (bvMatch) {
                 const bvId = bvMatch[0];
-                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe src="https://player.bilibili.com/player.html?bvid=${bvId}&page=1" width="100vw" height="80vh" max-height="80vh" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
+                videoSrc = `https://player.bilibili.com/player.html?bvid=${bvId}&page=1`;
+                console.log('Using Bilibili video:', videoSrc);
+                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe src="${videoSrc}" width="100vw" height="80vh" max-height="80vh" scrolling="no" frameborder="0" allowfullscreen="allowfullscreen" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
                 hasVideo = true;
+            } else {
+                console.warn('Could not extract BV ID from Bilibili link:', project.videoLink);
             }
         }
         // Vimeo视频
-        else if (hasValidVideoLink && project.videoLink.includes('vimeo.com')) {
+        else if (project.videoLink && project.videoLink.includes('vimeo.com')) {
+            // 匹配 vimeo.com/数字 或 vimeo.com/数字?参数
             const match = project.videoLink.match(/vimeo\.com\/(\d+)/);
             const vimeoId = match ? match[1] : null;
             if (vimeoId) {
-                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe src="https://player.vimeo.com/video/${vimeoId}" width="100vw" height="80vh" max-height="80vh" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
+                videoSrc = `https://player.vimeo.com/video/${vimeoId}`;
+                console.log('Using Vimeo video:', videoSrc, 'from original:', project.videoLink);
+                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe src="${videoSrc}" width="100vw" height="80vh" max-height="80vh" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
                 hasVideo = true;
+            } else {
+                console.warn('Could not extract Vimeo ID from link:', project.videoLink);
             }
         }
         // YouTube视频
-        else if (hasValidVideoLink && (project.videoLink.includes('youtube.com') || project.videoLink.includes('youtu.be'))) {
+        else if (project.videoLink && (project.videoLink.includes('youtube.com') || project.videoLink.includes('youtu.be'))) {
             let youtubeId = '';
-            try {
-                if (project.videoLink.includes('youtube.com')) {
+            if (project.videoLink.includes('youtube.com')) {
+                try {
                     const url = new URL(project.videoLink);
                     youtubeId = url.searchParams.get('v');
-                } else {
-                    const match = project.videoLink.match(/youtu\.be\/([\w-]+)/);
-                    youtubeId = match ? match[1] : '';
+                } catch (e) {
+                    console.warn('Error parsing YouTube URL:', e);
                 }
-                if (youtubeId && youtubeId.trim() !== '') {
-                    videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe width="100vw" height="80vh" max-height="80vh" src="https://www.youtube.com/embed/${youtubeId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
-                    hasVideo = true;
-                }
-            } catch (e) {
-                console.error('Invalid YouTube URL:', project.videoLink);
+            } else {
+                const match = project.videoLink.match(/youtu\.be\/([\w-]+)/);
+                youtubeId = match ? match[1] : '';
+            }
+            if (youtubeId) {
+                videoSrc = `https://www.youtube.com/embed/${youtubeId}`;
+                console.log('Using YouTube video:', videoSrc, 'from original:', project.videoLink);
+                videoSlot.innerHTML = `<div style="width:100vw;max-width:100vw;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);display:flex;justify-content:center;"><iframe width="100vw" height="80vh" max-height="80vh" src="${videoSrc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" style="border-radius:0;max-width:100vw;display:block;margin:auto;"></iframe></div>`;
+                hasVideo = true;
+            } else {
+                console.warn('Could not extract YouTube ID from link:', project.videoLink);
             }
         }
         
-        // 只有在有视频时才显示视频区域 - 使用CSS类控制
+        // 只有在有视频时才显示视频区域
         if (hasVideo) {
-            videoSlot.className = 'project-detail-video has-video';
-            videoSlot.id = 'project-video-section';
+            console.log('Video rendered successfully with src:', videoSrc);
+            videoSlot.style.display = 'block';
+            videoSlot.style.visibility = 'visible';
+            videoSlot.style.opacity = '1';
+            videoSlot.style.marginTop = '0';
+            videoSlot.style.marginBottom = '0';
         } else {
-            // 确保没有视频时完全隐藏 - 移除has-video类，使用CSS默认隐藏
-            videoSlot.className = 'project-detail-video';
-            videoSlot.id = 'project-video-slot-full';
+            console.log('No video found for this project');
+            // 确保没有视频时完全隐藏
+            videoSlot.style.display = 'none';
             videoSlot.innerHTML = '';
-            // 移除所有子元素
-            while (videoSlot.firstChild) {
-                videoSlot.removeChild(videoSlot.firstChild);
-            }
         }
     } else {
         console.error('Video slot not found!');
@@ -728,7 +752,9 @@ function generateTOC() {
     ];
     
     tocItems.forEach(item => {
-        const section = document.getElementById(item.id);
+        // 视频section使用不同的ID
+        const sectionId = item.id === 'project-video-section' ? 'project-video-slot-full' : item.id;
+        const section = document.getElementById(sectionId);
         // 检查section是否存在且有内容（视频section需要检查是否有iframe）
         const hasContent = section && (
             section.innerHTML.trim() !== '' || 
@@ -743,7 +769,9 @@ function generateTOC() {
             tocItem.textContent = item.label;
             tocItem.onclick = (e) => {
                 e.preventDefault();
-                scrollToSection(item.id);
+                // 视频section使用不同的ID
+                const scrollId = item.id === 'project-video-section' ? 'project-video-slot-full' : item.id;
+                scrollToSection(scrollId);
             };
             tocNav.appendChild(tocItem);
         }
@@ -789,7 +817,7 @@ window.addEventListener('scroll', () => {
             'project-title-section',
             'project-description-section',
             'project-meta-section',
-            'project-video-section',
+            'project-video-slot-full',
             'project-gallery-section'
         ];
         
