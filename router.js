@@ -4,6 +4,20 @@ let projectsData = null;
 
 // 初始化路由
 export function initRouter() {
+    // 检查是否是单轨叙事模式
+    const homePage = document.getElementById('home-page');
+    const isSingleTrack = homePage && homePage.classList.contains('single-track-container');
+    
+    if (isSingleTrack) {
+        // 单轨叙事模式：确保主页可见，不处理路由
+        console.log('Single track mode detected, skipping router initialization');
+        // 确保主页可见
+        if (homePage) {
+            homePage.style.display = 'block';
+        }
+        return;
+    }
+    
     // 加载项目数据
     fetch('data.json')
         .then(res => res.json())
@@ -47,12 +61,17 @@ export function showHomePage() {
     const projectPage = document.getElementById('project-page');
     const topNavbar = document.querySelector('.top-navbar');
     
-    if (homePage) homePage.style.display = 'block';
+    if (homePage) {
+        homePage.style.display = 'block';
+        // 单轨叙事模式
+        if (homePage.classList.contains('single-track-container')) {
+            document.body.classList.add('single-track-mode');
+            if (topNavbar) topNavbar.style.display = 'none';
+            document.body.style.paddingTop = '0';
+            document.body.style.overflow = 'hidden';
+        }
+    }
     if (projectPage) projectPage.style.display = 'none';
-    // 显示顶部导航栏
-    if (topNavbar) topNavbar.style.display = 'flex';
-    // 恢复body的顶部padding
-    document.body.style.paddingTop = '60px';
     
     // 更新URL（不刷新页面）
     if (window.location.hash !== '') {
@@ -360,7 +379,7 @@ function renderProjectPage(project) {
                     imgEl.src = img;
                     imgEl.alt = `Setting Gallery - Photo ${index + 1}`;
                     imgEl.loading = 'lazy';
-                    imgEl.style.cssText = 'width:100%;height:600px;object-fit:cover;display:block;transition:transform 0.3s,filter 0.3s;cursor:pointer;background:#f5f5f5;';
+                    imgEl.style.cssText = 'width:100%;height:450px;object-fit:cover;display:block;transition:transform 0.3s,filter 0.3s;cursor:pointer;background:#f5f5f5;';
                     imgEl.onclick = () => {
                         if (window.openLightbox) {
                             const allImgs = Array.from(settingContainer.querySelectorAll('img'));

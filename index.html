@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .gallery {
             /* ... existing styles ... */
@@ -20,7 +22,7 @@
 <body>
     <!-- 鼠标轨迹容器 -->
     <div id="cursor-trail"></div>
-    <nav class="top-navbar">
+    <nav class="top-navbar" style="display: none;">
         <div class="navbar-left" id="home-link" style="cursor:pointer;">Xuanyi Wang</div>
         <div class="navbar-right">
             <a href="#about" class="nav-link" data-page="about">About</a>
@@ -28,36 +30,55 @@
             <a href="#projects" class="nav-link" id="projects-link">Projects</a>
         </div>
     </nav>
+    
+    <!-- 单轨叙事导航栏 -->
+    <nav class="single-track-nav" id="single-track-nav">
+        <div class="nav-left">
+            <a href="#projects" class="nav-link-single" data-section="projects">PROJECTS</a>
+            <a href="#resume" class="nav-link-single" data-section="resume">RESUME</a>
+            <a href="#archives" class="nav-link-single" data-section="archives">ARCHIVES</a>
+        </div>
+        <div class="nav-center">
+            <a href="#home" class="nav-name" id="nav-home-link">Xuanyi Wang</a>
+        </div>
+        <div class="nav-right">
+            <!-- 右侧留空，保持平衡 -->
+        </div>
+    </nav>
+    
     <div id="main-content">
-        <!-- 主页内容 -->
-        <div id="home-page" class="page-container">
-            <button id="layout-toggle" class="layout-toggle-btn">
-                change layout 
-            </button>
-            
-            <div class="categories-menu">
-                <button class="menu-trigger">All</button>
-                <div class="menu-content">
-                    <div class="category-group">
-                        <div class="group-title">Category</div>
-                        <button class="category-btn" data-category="all">All</button>
-                        <button class="category-btn" data-category="Website+APP">Website+APP</button>
-                        <button class="category-btn" data-category="VR+AI">VR + AI</button>
-                        <button class="category-btn" data-category="Game">Game</button>
-                        <button class="category-btn" data-category="Fashion">Fashion</button>
-                        <button class="category-btn" data-category="Animation">Animation</button>
-                        <button class="category-btn" data-category="Illustrations+Comic">Illustrations + Comic</button>
-                    </div>
-                    <div class="category-group">
-                        <div class="group-title">Year</div>
-                        <button class="year-btn" data-year="all">All</button>
-                        <button class="year-btn" data-year="2025">2025</button>
-                        <button class="year-btn" data-year="2024">2024</button>
-                        <button class="year-btn" data-year="2023">2023</button>
-                    </div>
-                </div>
+        <!-- 项目网格视图 -->
+        <div id="projects-grid-view" class="projects-grid-container" style="display: none;">
+            <div class="projects-grid" id="projects-grid">
+                <!-- 项目卡片将在这里动态生成 -->
             </div>
-            <div class="gallery card-container"></div>
+        </div>
+        
+        <!-- 归档项目视图 -->
+        <div id="archives-grid-view" class="projects-grid-container" style="display: none;">
+            <div class="projects-grid" id="archives-grid">
+                <!-- 归档项目卡片将在这里动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 单轨叙事主页 -->
+        <div id="home-page" class="single-track-container" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: #fff !important; z-index: 10000 !important; padding-top: 80px !important; box-sizing: border-box !important;">
+            <!-- 第一屏：介绍页 -->
+            <section class="story-screen intro-screen" id="intro-screen" style="display: flex !important; visibility: visible !important; opacity: 1 !important; width: 100vw !important; height: 100vh !important; position: relative !important; background: #fff !important;">
+                <div class="intro-content" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 100 !important;">
+                    <h1 class="intro-title" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #000 !important; font-size: 120px !important;">Xuanyi Wang</h1>
+                    <p class="intro-description" style="display: block !important; visibility: visible !important; opacity: 1 !important; color: #333 !important; font-size: 20px !important;">
+                        Hi everyone, I'm Xuanyi Wang. I'm a designer and creative developer, but I'm more like a questioner of the system.<br><br>
+                        I'm obsessed with challenging and reshaping our routines of interacting with the digital world. My tools are game engines (Unity), WebGL, and VR, but my true mediums are narrative and experience. I'm dedicated to reshaping the 'power of narrative,' designing new languages ​​that allow unspoken selves to be heard and understood.<br><br>
+                        When I'm not immersed in code or the virtual world, you might find me bouldering at the gym or tattooing other people (yes, I'm also a part-time tattoo artist!!).
+                    </p>
+                </div>
+                <!-- 背景3D卡片容器 -->
+                <div class="floating-cards-bg" id="floating-cards-bg"></div>
+            </section>
+            
+            <!-- 项目展示屏（动态生成） -->
+            <div id="project-screens-container"></div>
         </div>
 
         <!-- 项目详情页面 -->

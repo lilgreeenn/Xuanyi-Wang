@@ -79,7 +79,7 @@ export async function handleCardClick(event) {
                 }
             } else {
                 // 降级方案：使用原来的弹窗
-                await loadProjectDetails(card);
+            await loadProjectDetails(card);
             }
         } catch (error) {
             console.error('Error navigating to project:', error);
