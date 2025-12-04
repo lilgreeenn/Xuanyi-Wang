@@ -47,11 +47,12 @@ body:has(#project-page.archives-project:not([style*="display: none"])) {
     box-sizing: border-box;
 }
 
-/* 归档项目的导航栏 - 白色背景，左侧留出空间给侧边栏 */
+/* 归档项目的导航栏 - 白色背景，保持原有布局 */
 .project-detail-page.archives-project .project-detail-nav {
     background: #fff;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-left: 280px; /* 250px侧边栏 + 30px间距 */
+    padding-left: 60px; /* 保持原有padding，不因侧边栏改变 */
+    padding-right: 60px;
 }
 
 .project-nav-left {

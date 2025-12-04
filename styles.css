@@ -68,6 +68,19 @@ body:has(#project-page:not([style*="display: none"])) {
     filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.6));
 }
 
+/* 荧光绿色拖尾效果 - 增强版 */
+#cursor-trail svg line {
+    stroke: #00ff88 !important;
+    stroke-width: 2 !important;
+    stroke-linecap: round !important;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.8)) drop-shadow(0 0 12px rgba(0, 255, 136, 0.4)) !important;
+}
+
+#cursor-trail svg circle {
+    fill: #00ff88 !important;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.8)) drop-shadow(0 0 12px rgba(0, 255, 136, 0.4)) !important;
+}
+
 /* 渐变定义 - 荧光绿 */
 .trail-gradient {
     stop-color: #00ff88;
