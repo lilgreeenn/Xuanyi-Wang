@@ -661,8 +661,20 @@ function renderCategorySidebar(currentProjectId) {
     // 获取所有ARCHIVES项目（非精选项目）
     const archivesProjects = projectsData.projects.filter(p => !isFeaturedProject(p.title));
     
-    // 按category分组
+    // 定义新的分类映射
+    const categoryMapping = {
+        'Interactive & Creative Tech': ['AR', 'AI', 'VR', 'Game', 'Website+APP', 'VR+AI', 'AR，AI', 'AR, AI'],
+        'Fashion Design': ['Fashion'],
+        'Visual Arts & Storytelling': ['Animation', 'Illustrations+Comic']
+    };
+    
+    // 按新分类分组
     const categoryMap = new Map();
+    
+    // 初始化新分类
+    Object.keys(categoryMapping).forEach(newCategory => {
+        categoryMap.set(newCategory, []);
+    });
     
     archivesProjects.forEach(project => {
         // 处理category可能是数组或字符串的情况
@@ -670,23 +682,74 @@ function renderCategorySidebar(currentProjectId) {
             ? project.category 
             : (project.category ? [project.category] : []);
         
-        categories.forEach(category => {
-            if (!categoryMap.has(category)) {
-                categoryMap.set(category, []);
+        // 找到项目应该属于的新分类
+        let assigned = false;
+        for (const [newCategory, oldCategories] of Object.entries(categoryMapping)) {
+            // 检查项目的category是否匹配新分类中的任何一个旧分类
+            const matches = categories.some(cat => {
+                const catLower = cat.toLowerCase().trim();
+                return oldCategories.some(oldCat => {
+                    const oldCatLower = oldCat.toLowerCase().trim();
+                    // 精确匹配或包含匹配
+                    return catLower === oldCatLower || 
+                           catLower.includes(oldCatLower) || 
+                           oldCatLower.includes(catLower) ||
+                           // 处理特殊字符（如+号）
+                           catLower.replace(/\+/g, '').includes(oldCatLower.replace(/\+/g, '')) ||
+                           oldCatLower.replace(/\+/g, '').includes(catLower.replace(/\+/g, ''));
+                });
+            });
+            
+            if (matches) {
+                // 避免重复添加
+                if (!categoryMap.get(newCategory).some(p => p.id === project.id)) {
+                    categoryMap.get(newCategory).push(project);
+                }
+                assigned = true;
+                break;
             }
-            categoryMap.get(category).push(project);
-        });
+        }
+        
+        // 如果没有匹配到，根据项目标题判断（处理特殊情况）
+        if (!assigned) {
+            const titleLower = project.title.toLowerCase();
+            // 根据项目标题判断分类
+            if (titleLower.includes('astrocaria') || titleLower.includes('gululu') || 
+                titleLower.includes('dream') || titleLower.includes('musika') || 
+                titleLower.includes('music diary') || titleLower.includes('hand painted')) {
+                if (!categoryMap.get('Interactive & Creative Tech').some(p => p.id === project.id)) {
+                    categoryMap.get('Interactive & Creative Tech').push(project);
+                }
+            } else if (titleLower.includes('running life') || titleLower.includes('young') || 
+                       titleLower.includes('sleeping') || titleLower.includes('high')) {
+                if (!categoryMap.get('Visual Arts & Storytelling').some(p => p.id === project.id)) {
+                    categoryMap.get('Visual Arts & Storytelling').push(project);
+                }
+            } else if (titleLower.includes('back to') || titleLower.includes('upcycle') || 
+                       titleLower.includes('bride') || titleLower.includes('pure') || 
+                       titleLower.includes('abandon') || titleLower.includes('living in internet') ||
+                       (titleLower.includes('run') && !titleLower.includes('running life'))) {
+                if (!categoryMap.get('Fashion Design').some(p => p.id === project.id)) {
+                    categoryMap.get('Fashion Design').push(project);
+                }
+            }
+        }
     });
     
-    // 按category名称排序
-    const sortedCategories = Array.from(categoryMap.entries()).sort((a, b) => 
-        a[0].localeCompare(b[0])
-    );
+    // 定义显示顺序
+    const displayOrder = [
+        'Interactive & Creative Tech',
+        'Fashion Design',
+        'Visual Arts & Storytelling'
+    ];
     
     // 渲染侧边栏
     sidebar.innerHTML = '';
     
-    sortedCategories.forEach(([category, projects]) => {
+    displayOrder.forEach(newCategory => {
+        const projects = categoryMap.get(newCategory);
+        if (!projects || projects.length === 0) return; // 跳过空分类
+        
         // 创建分类组
         const categoryGroup = document.createElement('div');
         categoryGroup.className = 'category-group';
@@ -694,7 +757,7 @@ function renderCategorySidebar(currentProjectId) {
         // 分类标题
         const categoryTitle = document.createElement('div');
         categoryTitle.className = 'category-title';
-        categoryTitle.textContent = category;
+        categoryTitle.textContent = newCategory;
         categoryGroup.appendChild(categoryTitle);
         
         // 项目列表
