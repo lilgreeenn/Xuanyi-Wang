@@ -250,6 +250,9 @@ function createProjectScreens() {
             const projectTitleLower = project.title.toLowerCase();
             const isLayoffProject = projectTitleLower.includes('layoff');
             const isDustyProject = projectTitleLower.includes('dusty');
+            const isShadowBallProject = projectTitleLower.includes('shadow ball');
+            const isCityQuestProject = projectTitleLower.includes('cityquest') || projectTitleLower.includes('city quest');
+            const isKberKillProject = projectTitleLower.includes('kberkill');
             let mediaContent = '';
             
             if (isDustyProject) {
@@ -270,6 +273,27 @@ function createProjectScreens() {
                     <img src="lssp4.GIF" alt="Layoff GIF 4" loading="lazy" decoding="async">
                     <img src="lssp5.GIF" alt="Layoff GIF 5" loading="lazy" decoding="async">
                 `;
+            } else if (isCityQuestProject) {
+                // 为CityQuest项目添加图片和GIF
+                mediaContent = `
+                    <img src="cqv1.png" alt="CityQuest 1" loading="lazy" decoding="async">
+                    <img src="cqv2.GIF" alt="CityQuest 2" loading="lazy" decoding="async">
+                    <img src="cqv3.png" alt="CityQuest 3" loading="lazy" decoding="async">
+                    <img src="cqv4.GIF" alt="CityQuest 4" loading="lazy" decoding="async">
+                    <img src="cqv5.png" alt="CityQuest 5" loading="lazy" decoding="async">
+                `;
+            } else if (isKberKillProject) {
+                // 为KberKill项目添加图片和GIF
+                mediaContent = `
+                    <img src="kkv1.png" alt="KberKill 1" loading="lazy" decoding="async">
+                    <img src="kkv2.png" alt="KberKill 2" loading="lazy" decoding="async">
+                    <img src="kkv3.gif" alt="KberKill 3" loading="lazy" decoding="async">
+                    <img src="kkv4.png" alt="KberKill 4" loading="lazy" decoding="async">
+                    <img src="kkv5.png" alt="KberKill 5" loading="lazy" decoding="async">
+                `;
+            } else if (isShadowBallProject) {
+                // 为Shadow Ball项目添加黑色占位屏幕（暂时为空，可以后续添加内容）
+                mediaContent = '';
             }
             
             mediaScreen.innerHTML = `
