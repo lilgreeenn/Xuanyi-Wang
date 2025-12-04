@@ -332,6 +332,19 @@ export function navigateToProject(projectId) {
 
 // 渲染项目详情页面
 function renderProjectPage(project, isFeatured = true) {
+    // 渲染左侧导航栏（仅ARCHIVES项目）
+    const sidebar = document.getElementById('project-detail-sidebar');
+    if (sidebar) {
+        if (!isFeatured) {
+            // ARCHIVES项目：显示并渲染侧边栏
+            sidebar.style.display = 'block';
+            renderCategorySidebar(project.id);
+        } else {
+            // 精选项目：隐藏侧边栏
+            sidebar.style.display = 'none';
+        }
+    }
+    
     // 更新标题
     const titleEl = document.getElementById('project-title-full');
     if (titleEl) titleEl.textContent = project.title;
@@ -636,6 +649,81 @@ function renderProjectPage(project, isFeatured = true) {
     
     // 渲染"You may also like"部分
     renderYouMayAlsoLike(project.id);
+}
+
+// 渲染分类侧边栏（仅ARCHIVES项目）
+function renderCategorySidebar(currentProjectId) {
+    if (!projectsData) return;
+    
+    const sidebar = document.getElementById('project-detail-sidebar');
+    if (!sidebar) return;
+    
+    // 获取所有ARCHIVES项目（非精选项目）
+    const archivesProjects = projectsData.projects.filter(p => !isFeaturedProject(p.title));
+    
+    // 按category分组
+    const categoryMap = new Map();
+    
+    archivesProjects.forEach(project => {
+        // 处理category可能是数组或字符串的情况
+        const categories = Array.isArray(project.category) 
+            ? project.category 
+            : (project.category ? [project.category] : []);
+        
+        categories.forEach(category => {
+            if (!categoryMap.has(category)) {
+                categoryMap.set(category, []);
+            }
+            categoryMap.get(category).push(project);
+        });
+    });
+    
+    // 按category名称排序
+    const sortedCategories = Array.from(categoryMap.entries()).sort((a, b) => 
+        a[0].localeCompare(b[0])
+    );
+    
+    // 渲染侧边栏
+    sidebar.innerHTML = '';
+    
+    sortedCategories.forEach(([category, projects]) => {
+        // 创建分类组
+        const categoryGroup = document.createElement('div');
+        categoryGroup.className = 'category-group';
+        
+        // 分类标题
+        const categoryTitle = document.createElement('div');
+        categoryTitle.className = 'category-title';
+        categoryTitle.textContent = category;
+        categoryGroup.appendChild(categoryTitle);
+        
+        // 项目列表
+        projects.forEach(project => {
+            const projectItem = document.createElement('div');
+            projectItem.className = 'category-project-item';
+            if (project.id === currentProjectId) {
+                projectItem.classList.add('active');
+            }
+            projectItem.textContent = project.title;
+            projectItem.dataset.projectId = project.id;
+            
+            // 点击跳转
+            projectItem.addEventListener('click', () => {
+                if (window.navigateToProject) {
+                    window.navigateToProject(project.id);
+                }
+            });
+            
+            categoryGroup.appendChild(projectItem);
+        });
+        
+        // 分隔线
+        const divider = document.createElement('div');
+        divider.className = 'category-divider';
+        categoryGroup.appendChild(divider);
+        
+        sidebar.appendChild(categoryGroup);
+    });
 }
 
 // 渲染"You may also like"部分

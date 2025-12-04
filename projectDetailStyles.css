@@ -47,10 +47,11 @@ body:has(#project-page.archives-project:not([style*="display: none"])) {
     box-sizing: border-box;
 }
 
-/* 归档项目的导航栏 - 白色背景 */
+/* 归档项目的导航栏 - 白色背景，左侧留出空间给侧边栏 */
 .project-detail-page.archives-project .project-detail-nav {
     background: #fff;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-left: 280px; /* 250px侧边栏 + 30px间距 */
 }
 
 .project-nav-left {
@@ -119,6 +120,80 @@ body:has(#project-page.archives-project:not([style*="display: none"])) {
     opacity: 0.7;
 }
 
+/* 左侧导航栏（仅ARCHIVES项目） */
+.project-detail-sidebar {
+    position: fixed;
+    left: 0;
+    top: 80px;
+    width: 250px;
+    height: calc(100vh - 80px);
+    background: #fff;
+    padding: 40px 30px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10003;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.project-detail-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.project-detail-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.project-detail-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.project-detail-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.category-group {
+    margin-bottom: 40px;
+}
+
+.category-title {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+}
+
+.category-project-item {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: #666;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    line-height: 1.5;
+}
+
+.category-project-item:hover {
+    color: #000;
+}
+
+.category-project-item.active {
+    color: #000;
+    font-weight: 500;
+}
+
+.category-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
 /* 项目详情内容区域 */
 .project-detail-content {
     max-width: 100%;
@@ -129,11 +204,12 @@ body:has(#project-page.archives-project:not([style*="display: none"])) {
     overflow-x: hidden;
 }
 
-/* 归档项目的内容区域 - 白色背景 */
+/* 归档项目的内容区域 - 白色背景，左侧留出空间给侧边栏 */
 .project-detail-page.archives-project .project-detail-content {
     background: #fff !important;
     max-width: 1200px;
     margin: 0 auto;
+    margin-left: 250px;
     padding: 0 60px;
 }
 
@@ -584,6 +660,19 @@ body:has(#project-page.archives-project:not([style*="display: none"])) {
 
 /* 移动端适配 */
 @media (max-width: 768px) {
+    .project-detail-sidebar {
+        display: none !important; /* 移动端隐藏侧边栏 */
+    }
+    
+    .project-detail-page.archives-project .project-detail-nav {
+        padding-left: 20px; /* 移动端恢复正常padding */
+    }
+    
+    .project-detail-page.archives-project .project-detail-content {
+        margin-left: 0; /* 移动端恢复全宽 */
+        padding: 0 20px;
+    }
+    
     .project-detail-nav {
         padding: 0 20px;
         height: 60px;
