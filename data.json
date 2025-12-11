@@ -490,7 +490,23 @@
             "image": "2400.PNG"
            
            
+        },
+        {
+            "id": 24,
+            "title": "Red",
+            "category": "Fashion",
+            "tags": ["Fashion", "Machine Knitting"],
+           
+            "tech": "Machine Knitting, Dubied machine",
+            "date": "December 2025",
+            "image": "red1.PNG",
+            "gallery": [
+                
+                "red2.JPG",
+                "red3.JPG",
+                "red4.JPG"
+            ]
+           
         }
-       
     ]
 }
