@@ -665,7 +665,7 @@ function renderCategorySidebar(currentProjectId) {
     const categoryMapping = {
         'Interactive & Creative Tech': ['AR', 'AI', 'VR', 'Game', 'Website+APP', 'VR+AI', 'AR，AI', 'AR, AI'],
         'Fashion Design': ['Fashion'],
-        'Visual Arts & Storytelling': ['Animation', 'Illustrations+Comic']
+        'Visual Arts & Storytelling': ['Animation', 'Illustrations+Comic','PrintMaking']
     };
     
     // 按新分类分组

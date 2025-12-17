@@ -277,7 +277,7 @@
             "title": "Young, Wild and Free",
             "category": "Illustrations+Comic",
             "tags": ["Comic"],
-            "description": "2008 China shamate Love story.（DEMO）",
+            "description": "Comic + An Interview-Based Social Investigation into Migrant Youth, Labor, and Subcultural Identity in Early 2000s China.",
             "tech": "Comic", 
             "Status": "Ongoing",
             "date": "November 2024",
@@ -492,12 +492,30 @@
            
             "tech": "Machine Knitting, Dubied machine",
             "date": "December 2025",
-            "image": "red1.PNG",
+            "image": "red2.JPG",
             "gallery": [
                 
-                "red2.JPG",
+                "red1.PNG",
                 "red3.JPG",
                 "red4.JPG"
+            ]
+           
+        },
+        {
+            "id": 25,
+            "title": "PrintMaking Stuff",
+            "category": "PrintMaking",
+            "tags": ["PrintMaking"],
+           
+            "tech": "PrintMaking, silk screen printing, lithography, Relief Wood Carving",
+            "date": "2025",
+            "image": "ps55.png",
+            "gallery": [
+                
+                "ps1.png",
+                "ps2.png",
+                "ps4.JPG",
+                "ps5.JPG"
             ]
            
         }
