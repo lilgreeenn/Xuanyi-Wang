@@ -62,6 +62,15 @@ if (isSingleTrack) {
         
         // 绑定导航栏点击事件
         initSingleTrackNav();
+
+        // 绑定首页 All Projects 按钮
+        const introAllProjectsBtn = document.getElementById('intro-all-projects-btn');
+        if (introAllProjectsBtn) {
+            introAllProjectsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showProjectsGridView();
+            });
+        }
     });
     
     // 将路由函数暴露到全局（用于项目详情页）
@@ -200,9 +209,9 @@ if (isSingleTrack) {
         'cityquest',
         'layoff',
         'layoffs',
+        'young, wild and free',
         'kberkill',
-        'shadow ball',
-        'shadow play'
+        'shadow ball'
     ];
     
     function isFeaturedProject(projectTitle) {
@@ -232,7 +241,13 @@ if (isSingleTrack) {
                 
                 // 只显示精选项目，并按指定顺序排序
                 const featuredProjects = data.projects
-                    .filter(project => isFeaturedProject(project.title))
+                    .filter(project => {
+                        const titleLower = project.title.toLowerCase();
+                        // 精选项目 + 排除 Dusty Memories(Comic)
+                        const isFeatured = isFeaturedProject(project.title);
+                        const isDustyComic = titleLower.includes('dusty') && titleLower.includes('comic');
+                        return isFeatured && !isDustyComic;
+                    })
                     .sort((a, b) => {
                         const orderA = getProjectDisplayOrder(a.title);
                         const orderB = getProjectDisplayOrder(b.title);

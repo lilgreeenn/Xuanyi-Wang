@@ -113,10 +113,9 @@ const projectDisplayOrder = [
     'cityquest',
     'layoff',
     'layoffs',
+    'young, wild and free',
     'kberkill',
-    'shadow ball',
-    'shadow play',
-    'young, wild and free'
+    'shadow ball'
 ];
 
 // 检查项目是否应该显示在首页
@@ -253,6 +252,7 @@ function createProjectScreens() {
             const isShadowBallProject = projectTitleLower.includes('shadow ball');
             const isCityQuestProject = projectTitleLower.includes('cityquest') || projectTitleLower.includes('city quest');
             const isKberKillProject = projectTitleLower.includes('kberkill');
+            const isYoungWildAndFreeProject = projectTitleLower.includes('young, wild and free') || projectTitleLower.includes('young wild and free');
             let mediaContent = '';
             
             if (isDustyProject) {
@@ -290,6 +290,15 @@ function createProjectScreens() {
                     <img src="kkv3.gif" alt="KberKill 3" loading="lazy" decoding="async">
                     <img src="kkv4.png" alt="KberKill 4" loading="lazy" decoding="async">
                     <img src="kkv5.png" alt="KberKill 5" loading="lazy" decoding="async">
+                `;
+            } else if (isYoungWildAndFreeProject) {
+                // 为 Young, Wild and Free 项目添加 5 张图片
+                mediaContent = `
+                    <img src="smttt1.png" alt="Young, Wild and Free 1" loading="lazy" decoding="async">
+                    <img src="smttt2.png" alt="Young, Wild and Free 2" loading="lazy" decoding="async">
+                    <img src="smttt3.png" alt="Young, Wild and Free 3" loading="lazy" decoding="async">
+                    <img src="smttt4.png" alt="Young, Wild and Free 4" loading="lazy" decoding="async">
+                    <img src="smttt5.png" alt="Young, Wild and Free 5" loading="lazy" decoding="async">
                 `;
             } else if (isShadowBallProject) {
                 // 为Shadow Ball项目添加黑色占位屏幕（暂时为空，可以后续添加内容）
