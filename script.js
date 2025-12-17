@@ -190,7 +190,7 @@ if (isSingleTrack) {
         'cityquest',
         'layoff',
         'dusty',
-        'young wild and free'
+        'young, wild and free'
     ];
     
     // 定义项目显示顺序

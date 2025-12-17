@@ -103,7 +103,7 @@ const featuredProjectTitles = [
     'cityquest',
     'layoff',
     'dusty',
-    'young wild and free'
+    'young, wild and free'
 ];
 
 // 定义项目显示顺序（按用户要求的顺序）
@@ -116,7 +116,7 @@ const projectDisplayOrder = [
     'kberkill',
     'shadow ball',
     'shadow play',
-    'young wild and free'
+    'young, wild and free'
 ];
 
 // 检查项目是否应该显示在首页

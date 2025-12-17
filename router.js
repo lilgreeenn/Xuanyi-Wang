@@ -117,7 +117,7 @@ function isFeaturedProject(projectTitle) {
         'cityquest',
         'layoff',
         'dusty',
-        'young wild and free'
+        'young, wild and free'
     ];
     const titleLower = projectTitle.toLowerCase();
     return featuredProjectTitles.some(featured => titleLower.includes(featured));
